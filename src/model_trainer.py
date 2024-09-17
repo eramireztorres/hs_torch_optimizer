@@ -68,28 +68,60 @@ class NNModelTrainer:
             
             print(f'Epoch [{epoch+1}/{epochs}], Loss: {running_loss/len(dataloader)}')
 
+    
     def evaluate_model(self):
         """
-        Evaluate the trained classification model on test data and return performance metrics.
-        
-        Returns:
-            dict: A dictionary containing accuracy, precision, recall, and F1 score.
+        Evaluate the trained model on test data and return performance metrics, including per-class metrics.
         """
-        self.model.eval()
+        if self.model is None:
+            raise ValueError("Model has not been trained.")
+        
+        self.model.eval()  # Set the model to evaluation mode
         with torch.no_grad():
             inputs, labels = self.X_test.to(self.device), self.y_test.to(self.device)
             outputs = self.model(inputs)
             _, predicted = torch.max(outputs, 1)
             predicted = predicted.cpu().numpy()
             labels = labels.cpu().numpy()
-        
+    
+        # Calculate metrics per class and global metrics
         metrics = {
             "accuracy": accuracy_score(labels, predicted),
-            "precision": precision_score(labels, predicted, average='weighted'),
-            "recall": recall_score(labels, predicted, average='weighted'),
-            "f1_score": f1_score(labels, predicted, average='weighted')
+            "precision_per_class": precision_score(labels, predicted, average=None).tolist(),  # Convert to list
+            "recall_per_class": recall_score(labels, predicted, average=None).tolist(),  # Convert to list
+            "f1_score_per_class": f1_score(labels, predicted, average=None).tolist(),  # Convert to list
+            "overall_precision": precision_score(labels, predicted, average='weighted'),
+            "overall_recall": recall_score(labels, predicted, average='weighted'),
+            "overall_f1_score": f1_score(labels, predicted, average='weighted')
         }
+    
+        # Return both per-class and global metrics for better insights
         return metrics
+
+
+
+    # def evaluate_model(self):
+    #     """
+    #     Evaluate the trained classification model on test data and return performance metrics.
+        
+    #     Returns:
+    #         dict: A dictionary containing accuracy, precision, recall, and F1 score.
+    #     """
+    #     self.model.eval()
+    #     with torch.no_grad():
+    #         inputs, labels = self.X_test.to(self.device), self.y_test.to(self.device)
+    #         outputs = self.model(inputs)
+    #         _, predicted = torch.max(outputs, 1)
+    #         predicted = predicted.cpu().numpy()
+    #         labels = labels.cpu().numpy()
+        
+    #     metrics = {
+    #         "accuracy": accuracy_score(labels, predicted),
+    #         "precision": precision_score(labels, predicted, average='weighted'),
+    #         "recall": recall_score(labels, predicted, average='weighted'),
+    #         "f1_score": f1_score(labels, predicted, average='weighted')
+    #     }
+    #     return metrics
     
     def save_model(self, filepath):
         """

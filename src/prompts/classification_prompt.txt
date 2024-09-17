@@ -39,10 +39,16 @@ def load_model(X_train, y_train, hidden_dim=64):
     return SimpleClassificationNN(input_dim, hidden_dim, output_dim)
 
 Metrics:
-Accuracy: 0.936
-Precision: 0.937
-Recall: 0.936
-F1 Score: 0.936
+Global:
+    Accuracy: 0.936
+    Precision: 0.937
+    Recall: 0.936
+    F1 Score: 0.936
+Per-Class:
+    Precision per class: [0.94, 0.93]
+    Recall per class: [0.94, 0.93]
+    F1 Score per class: [0.94, 0.93]
+
 
 Extra Info:
 Not available
@@ -86,10 +92,16 @@ def load_model(X_train, y_train, hidden_dim=64):
     return SimpleClassificationNN(input_dim, hidden_dim, output_dim)
 
 Metrics:
-Accuracy: 0.89
-Precision: 0.88
-Recall: 0.87
-F1 Score: 0.88
+Global:
+    Accuracy: 0.89
+    Precision: 0.88
+    Recall: 0.87
+    F1 Score: 0.88
+Per-Class:
+    Precision per class: [0.90, 0.76]
+    Recall per class: [0.88, 0.65]
+    F1 Score per class: [0.89, 0.70]
+
 
 Extra Info:
 Not available
@@ -136,10 +148,16 @@ def load_model(X_train, y_train, hidden_dim=64):
     return SimpleClassificationNN(input_dim, hidden_dim, output_dim)
 
 Metrics:
-Accuracy: 0.85
-Precision: 0.80
-Recall: 0.78
-F1 Score: 0.79
+Global:
+    Accuracy: 0.85
+    Precision: 0.80
+    Recall: 0.78
+    F1 Score: 0.79
+Per-Class:
+    Precision per class: [0.87, 0.70]
+    Recall per class: [0.85, 0.60]
+    F1 Score per class: [0.86, 0.65]
+
 
 Extra Info:
 Binary classification problem with a class imbalance: there are 4 times more instances of class 0 than class 1.
@@ -186,10 +204,16 @@ def load_model(X_train, y_train, hidden_dim=64):
     return SimpleClassificationNN(input_dim, hidden_dim, output_dim)
 
 Metrics:
-Accuracy: 0.93
-Precision: 0.92
-Recall: 0.91
-F1 Score: 0.92
+Global:
+    Accuracy: 0.93
+    Precision: 0.92
+    Recall: 0.91
+    F1 Score: 0.92
+Per-Class:
+    Precision per class: [0.95, 0.89]
+    Recall per class: [0.94, 0.88]
+    F1 Score per class: [0.94, 0.88]
+
 
 Extra Info:
 Overfitting is suspected due to high training accuracy and lower test accuracy.
@@ -236,10 +260,16 @@ def load_model(X_train, y_train, hidden_dim=64):
 
 
 Metrics: 
-Accuracy: 0.82
-Precision: 0.78
-Recall: 0.76
-F1 Score: 0.77
+Global:
+    Accuracy: 0.82
+    Precision: 0.78
+    Recall: 0.76
+    F1 Score: 0.77
+Per-Class:
+    Precision per class: [0.80, 0.72]
+    Recall per class: [0.78, 0.70]
+    F1 Score per class: [0.79, 0.71]
+
 
 Extra Info:
 There is a suspicion of noisy labels in the dataset. It is estimated that up to 15% of the labels may be incorrect or ambiguous.
@@ -279,10 +309,8 @@ def load_model(X_train, y_train, hidden_dim=64, smoothing=0.1):
             loss = (-weight * log_prob).sum(dim=-1).mean()
             return loss
 
-    # Apply label smoothing to deal with noisy labels
     criterion = LabelSmoothingCrossEntropy(smoothing=smoothing)
     return model, criterion
-
 
 
 Please ensure all necessary imports are included within the function.
