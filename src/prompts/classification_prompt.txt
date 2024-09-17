@@ -17,6 +17,7 @@ Based on the given model and its performance, suggest improvements. You may eith
     - Adjust the hyperparameters of the current neural network, such as the number of hidden units or learning rate.
     - Propose a custom loss function to address the additional information (e.g., class imbalance, noisy labels).
     - Optimize the model using advanced techniques like batch normalization or dropout.
+    - Return either the improved model alone or a tuple containing the model and a custom loss function (criterion) if applicable.
 
 **Example 1** (Strong Metrics, Small Hyperparameter Tuning):
 Previous Model:
@@ -213,6 +214,76 @@ def load_model(X_train, y_train, hidden_dim=64):
     input_dim = X_train.shape[1]
     output_dim = len(set(y_train))
     return SimpleClassificationNN(input_dim, hidden_dim, output_dim)
+    
+**Example 5** (Noisy Labels):
+Previous Model:
+def load_model(X_train, y_train, hidden_dim=64):
+    import torch.nn as nn
+    class SimpleClassificationNN(nn.Module):
+        def __init__(self, input_dim, hidden_dim, output_dim):
+            super(SimpleClassificationNN, self).__init__()
+            self.fc1 = nn.Linear(input_dim, hidden_dim)
+            self.relu = nn.ReLU()
+            self.fc2 = nn.Linear(hidden_dim, output_dim)
+        def forward(self, x):
+            x = self.fc1(x)
+            x = self.relu(x)
+            x = self.fc2(x)
+            return x
+    input_dim = X_train.shape[1]
+    output_dim = len(set(y_train))
+    return SimpleClassificationNN(input_dim, hidden_dim, output_dim)
+
+
+Metrics: 
+Accuracy: 0.82
+Precision: 0.78
+Recall: 0.76
+F1 Score: 0.77
+
+Extra Info:
+There is a suspicion of noisy labels in the dataset. It is estimated that up to 15% of the labels may be incorrect or ambiguous.
+
+Suggested Improvement:
+Use a robust custom loss function, such as Label Smoothing Cross-Entropy, to reduce the impact of noisy labels on the model's performance. This approach replaces the hard 0/1 labels with softer, more distributed label values, helping the model generalize better despite noisy labels.
+def load_model(X_train, y_train, hidden_dim=64, smoothing=0.1):
+    import torch.nn as nn
+    import torch.nn.functional as F
+
+    class SimpleClassificationNN(nn.Module):
+        def __init__(self, input_dim, hidden_dim, output_dim):
+            super(SimpleClassificationNN, self).__init__()
+            self.fc1 = nn.Linear(input_dim, hidden_dim)
+            self.relu = nn.ReLU()
+            self.fc2 = nn.Linear(hidden_dim, output_dim)
+        def forward(self, x):
+            x = self.fc1(x)
+            x = self.relu(x)
+            x = self.fc2(x)
+            return x
+
+    input_dim = X_train.shape[1]
+    output_dim = len(set(y_train))
+    model = SimpleClassificationNN(input_dim, hidden_dim, output_dim)
+
+    # Define Label Smoothing Cross-Entropy Loss
+    class LabelSmoothingCrossEntropy(nn.Module):
+        def __init__(self, smoothing=0.0):
+            super(LabelSmoothingCrossEntropy, self).__init__()
+            self.smoothing = smoothing
+
+        def forward(self, pred, target):
+            log_prob = F.log_softmax(pred, dim=-1)
+            weight = pred.new_ones(pred.size()) * (self.smoothing / (pred.size(-1) - 1))
+            weight.scatter_(-1, target.unsqueeze(-1), (1.0 - self.smoothing))
+            loss = (-weight * log_prob).sum(dim=-1).mean()
+            return loss
+
+    # Apply label smoothing to deal with noisy labels
+    criterion = LabelSmoothingCrossEntropy(smoothing=smoothing)
+    return model, criterion
+
+
 
 Please ensure all necessary imports are included within the function.
 Provide only executable Python code for the improved model without any comments, explanations, or markdown formatting.
