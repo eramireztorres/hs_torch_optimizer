@@ -84,7 +84,15 @@ class MainController:
                 print(f"\n=== Iteration {iteration + 1} ===")
 
                 # Run the dynamically updated model
-                model = self.dynamic_updater.run_dynamic_model(X_train=self.data['X_train'], y_train=self.data['y_train'])
+                
+                # Add channel dimension if missing (for grayscale images)
+                X_train, y_train = self.data['X_train'], self.data['y_train']
+                
+                if len(X_train.shape) == 3:  # If shape is (batch_size, height, width)
+                    X_train = np.expand_dims(X_train, axis=1)
+               
+                
+                model = self.dynamic_updater.run_dynamic_model(X_train=X_train, y_train=y_train)
                 if model is None:
                     logging.error("No model returned by the dynamic model. Exiting.")
                     break
