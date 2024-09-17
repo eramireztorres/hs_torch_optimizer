@@ -1,0 +1,222 @@
+You are provided with the following Python model that implements a neural network classifier using PyTorch:
+
+{current_model_code}
+
+Classification metrics for this model are:
+{metrics_str}
+
+Previous models and their performance metrics are:
+{history_str}
+
+Additional Information:
+{extra_info}
+
+Task:
+Based on the given model and its performance, suggest improvements. You may either:
+    - Change the architecture of the neural network (e.g., add more layers, adjust activation functions).
+    - Adjust the hyperparameters of the current neural network, such as the number of hidden units or learning rate.
+    - Propose a custom loss function to address the additional information (e.g., class imbalance, noisy labels).
+    - Optimize the model using advanced techniques like batch normalization or dropout.
+
+**Example 1** (Strong Metrics, Small Hyperparameter Tuning):
+Previous Model:
+def load_model(X_train, y_train, hidden_dim=64):
+    import torch.nn as nn
+    class SimpleClassificationNN(nn.Module):
+        def __init__(self, input_dim, hidden_dim, output_dim):
+            super(SimpleClassificationNN, self).__init__()
+            self.fc1 = nn.Linear(input_dim, hidden_dim)
+            self.relu = nn.ReLU()
+            self.fc2 = nn.Linear(hidden_dim, output_dim)
+        def forward(self, x):
+            x = self.fc1(x)
+            x = self.relu(x)
+            x = self.fc2(x)
+            return x
+    input_dim = X_train.shape[1]
+    output_dim = len(set(y_train))
+    return SimpleClassificationNN(input_dim, hidden_dim, output_dim)
+
+Metrics:
+Accuracy: 0.936
+Precision: 0.937
+Recall: 0.936
+F1 Score: 0.936
+
+Extra Info:
+Not available
+
+Suggested Improvement:
+Since the metrics are strong, a small adjustment in hyperparameters to improve performance further:
+def load_model(X_train, y_train, hidden_dim=128):
+    import torch.nn as nn
+    class SimpleClassificationNN(nn.Module):
+        def __init__(self, input_dim, hidden_dim, output_dim):
+            super(SimpleClassificationNN, self).__init__()
+            self.fc1 = nn.Linear(input_dim, hidden_dim)
+            self.relu = nn.ReLU()
+            self.fc2 = nn.Linear(hidden_dim, output_dim)
+        def forward(self, x):
+            x = self.fc1(x)
+            x = self.relu(x)
+            x = self.fc2(x)
+            return x
+    input_dim = X_train.shape[1]
+    output_dim = len(set(y_train))
+    return SimpleClassificationNN(input_dim, hidden_dim=128, output_dim)
+
+**Example 2** (Add More Layers for Improved Performance):
+Previous Model:
+def load_model(X_train, y_train, hidden_dim=64):
+    import torch.nn as nn
+    class SimpleClassificationNN(nn.Module):
+        def __init__(self, input_dim, hidden_dim, output_dim):
+            super(SimpleClassificationNN, self).__init__()
+            self.fc1 = nn.Linear(input_dim, hidden_dim)
+            self.relu = nn.ReLU()
+            self.fc2 = nn.Linear(hidden_dim, output_dim)
+        def forward(self, x):
+            x = self.fc1(x)
+            x = self.relu(x)
+            x = self.fc2(x)
+            return x
+    input_dim = X_train.shape[1]
+    output_dim = len(set(y_train))
+    return SimpleClassificationNN(input_dim, hidden_dim, output_dim)
+
+Metrics:
+Accuracy: 0.89
+Precision: 0.88
+Recall: 0.87
+F1 Score: 0.88
+
+Extra Info:
+Not available
+
+Suggested Improvement:
+Add additional layers to improve the model’s ability to capture complex patterns in the data:
+def load_model(X_train, y_train, hidden_dim=64):
+    import torch.nn as nn
+    class SimpleClassificationNN(nn.Module):
+        def __init__(self, input_dim, hidden_dim, output_dim):
+            super(SimpleClassificationNN, self).__init__()
+            self.fc1 = nn.Linear(input_dim, hidden_dim)
+            self.fc2 = nn.Linear(hidden_dim, hidden_dim)
+            self.relu = nn.ReLU()
+            self.fc3 = nn.Linear(hidden_dim, output_dim)
+        def forward(self, x):
+            x = self.fc1(x)
+            x = self.relu(x)
+            x = self.fc2(x)
+            x = self.relu(x)
+            x = self.fc3(x)
+            return x
+    input_dim = X_train.shape[1]
+    output_dim = len(set(y_train))
+    return SimpleClassificationNN(input_dim, hidden_dim, output_dim)
+
+**Example 3** (Class Imbalance):
+Previous Model:
+def load_model(X_train, y_train, hidden_dim=64):
+    import torch.nn as nn
+    class SimpleClassificationNN(nn.Module):
+        def __init__(self, input_dim, hidden_dim, output_dim):
+            super(SimpleClassificationNN, self).__init__()
+            self.fc1 = nn.Linear(input_dim, hidden_dim)
+            self.relu = nn.ReLU()
+            self.fc2 = nn.Linear(hidden_dim, output_dim)
+        def forward(self, x):
+            x = self.fc1(x)
+            x = self.relu(x)
+            x = self.fc2(x)
+            return x
+    input_dim = X_train.shape[1]
+    output_dim = len(set(y_train))
+    return SimpleClassificationNN(input_dim, hidden_dim, output_dim)
+
+Metrics:
+Accuracy: 0.85
+Precision: 0.80
+Recall: 0.78
+F1 Score: 0.79
+
+Extra Info:
+Binary classification problem with a class imbalance: there are 4 times more instances of class 0 than class 1.
+
+Suggested Improvement:
+Use weighted cross-entropy loss to address the class imbalance by penalizing the majority class (class 0) more heavily:
+def load_model(X_train, y_train, hidden_dim=64):
+    import torch.nn as nn
+    class SimpleClassificationNN(nn.Module):
+        def __init__(self, input_dim, hidden_dim, output_dim):
+            super(SimpleClassificationNN, self).__init__()
+            self.fc1 = nn.Linear(input_dim, hidden_dim)
+            self.relu = nn.ReLU()
+            self.fc2 = nn.Linear(hidden_dim, output_dim)
+        def forward(self, x):
+            x = self.fc1(x)
+            x = self.relu(x)
+            x = self.fc2(x)
+            return x
+    input_dim = X_train.shape[1]
+    output_dim = len(set(y_train))
+    model = SimpleClassificationNN(input_dim, hidden_dim, output_dim)
+    class_weights = torch.FloatTensor([0.25, 0.75])  # Adjust class weights based on imbalance
+    criterion = nn.CrossEntropyLoss(weight=class_weights)
+    return model, criterion
+
+**Example 4** (Use Dropout for Overfitting):
+Previous Model:
+def load_model(X_train, y_train, hidden_dim=64):
+    import torch.nn as nn
+    class SimpleClassificationNN(nn.Module):
+        def __init__(self, input_dim, hidden_dim, output_dim):
+            super(SimpleClassificationNN, self).__init__()
+            self.fc1 = nn.Linear(input_dim, hidden_dim)
+            self.relu = nn.ReLU()
+            self.fc2 = nn.Linear(hidden_dim, output_dim)
+        def forward(self, x):
+            x = self.fc1(x)
+            x = self.relu(x)
+            x = self.fc2(x)
+            return x
+    input_dim = X_train.shape[1]
+    output_dim = len(set(y_train))
+    return SimpleClassificationNN(input_dim, hidden_dim, output_dim)
+
+Metrics:
+Accuracy: 0.93
+Precision: 0.92
+Recall: 0.91
+F1 Score: 0.92
+
+Extra Info:
+Overfitting is suspected due to high training accuracy and lower test accuracy.
+
+Suggested Improvement:
+Introduce dropout to prevent overfitting:
+def load_model(X_train, y_train, hidden_dim=64):
+    import torch.nn as nn
+    class SimpleClassificationNN(nn.Module):
+        def __init__(self, input_dim, hidden_dim, output_dim):
+            super(SimpleClassificationNN, self).__init__()
+            self.fc1 = nn.Linear(input_dim, hidden_dim)
+            self.dropout = nn.Dropout(0.5)  # Dropout with 50% rate
+            self.relu = nn.ReLU()
+            self.fc2 = nn.Linear(hidden_dim, output_dim)
+        def forward(self, x):
+            x = self.fc1(x)
+            x = self.dropout(x)
+            x = self.relu(x)
+            x = self.fc2(x)
+            return x
+    input_dim = X_train.shape[1]
+    output_dim = len(set(y_train))
+    return SimpleClassificationNN(input_dim, hidden_dim, output_dim)
+
+Please ensure all necessary imports are included within the function.
+Provide only executable Python code for the improved model without any comments, explanations, or markdown formatting.
+
+Output:
+Provide only the improved Python code that can replace the current model.
+

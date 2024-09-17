@@ -1,0 +1,213 @@
+You are provided with the following Python model that implements a neural network for regression using PyTorch:
+
+{current_model_code}
+
+Regression metrics for this model are:
+{metrics_str}
+
+Previous models and their performance metrics are:
+{history_str}
+
+Additional Information:
+{extra_info}
+
+Task:
+Based on the given model and its performance, suggest improvements. You may either:
+    - Adjust the architecture of the neural network (e.g., add more layers, change activation functions).
+    - Adjust the hyperparameters of the current neural network, such as the number of hidden units or learning rate.
+    - Suggest custom loss functions or regularization techniques to improve the regression performance.
+    - Optimize the model using advanced techniques like batch normalization, dropout, or L2 regularization.
+
+**Example 1** (Strong Metrics, Small Hyperparameter Tuning):
+Previous Model:
+def load_model(X_train, y_train):
+    import torch.nn as nn
+    class SimpleRegressionNN(nn.Module):
+        def __init__(self, input_dim, hidden_dim):
+            super(SimpleRegressionNN, self).__init__()
+            self.fc1 = nn.Linear(input_dim, hidden_dim)
+            self.relu = nn.ReLU()
+            self.fc2 = nn.Linear(hidden_dim, 1)
+        def forward(self, x):
+            x = self.fc1(x)
+            x = self.relu(x)
+            x = self.fc2(x)
+            return x
+    input_dim = X_train.shape[1]
+    hidden_dim = 64
+    return SimpleRegressionNN(input_dim, hidden_dim)
+
+Metrics:
+Mean Squared Error: 120.5
+R^2 Score: 0.92
+
+Extra Info:
+Not available
+
+Suggested Improvement:
+Since the model is already performing well, a small adjustment in the number of hidden units could further improve the performance:
+def load_model(X_train, y_train):
+    import torch.nn as nn
+    class SimpleRegressionNN(nn.Module):
+        def __init__(self, input_dim, hidden_dim):
+            super(SimpleRegressionNN, self).__init__()
+            self.fc1 = nn.Linear(input_dim, hidden_dim)
+            self.relu = nn.ReLU()
+            self.fc2 = nn.Linear(hidden_dim, 1)
+        def forward(self, x):
+            x = self.fc1(x)
+            x = self.relu(x)
+            x = self.fc2(x)
+            return x
+    input_dim = X_train.shape[1]
+    hidden_dim = 128  # Increased hidden units for better performance
+    return SimpleRegressionNN(input_dim, hidden_dim)
+
+**Example 2** (Add More Layers for Better Representation):
+Previous Model:
+def load_model(X_train, y_train):
+    import torch.nn as nn
+    class SimpleRegressionNN(nn.Module):
+        def __init__(self, input_dim, hidden_dim):
+            super(SimpleRegressionNN, self).__init__()
+            self.fc1 = nn.Linear(input_dim, hidden_dim)
+            self.relu = nn.ReLU()
+            self.fc2 = nn.Linear(hidden_dim, 1)
+        def forward(self, x):
+            x = self.fc1(x)
+            x = self.relu(x)
+            x = self.fc2(x)
+            return x
+    input_dim = X_train.shape[1]
+    hidden_dim = 64
+    return SimpleRegressionNN(input_dim, hidden_dim)
+
+Metrics:
+Mean Squared Error: 145.0
+R^2 Score: 0.89
+
+Extra Info:
+Not available
+
+Suggested Improvement:
+Add additional layers to improve the model’s capacity to learn complex patterns:
+def load_model(X_train, y_train):
+    import torch.nn as nn
+    class SimpleRegressionNN(nn.Module):
+        def __init__(self, input_dim, hidden_dim):
+            super(SimpleRegressionNN, self).__init__()
+            self.fc1 = nn.Linear(input_dim, hidden_dim)
+            self.fc2 = nn.Linear(hidden_dim, hidden_dim)
+            self.relu = nn.ReLU()
+            self.fc3 = nn.Linear(hidden_dim, 1)
+        def forward(self, x):
+            x = self.fc1(x)
+            x = self.relu(x)
+            x = self.fc2(x)
+            x = self.relu(x)
+            x = self.fc3(x)
+            return x
+    input_dim = X_train.shape[1]
+    hidden_dim = 64
+    return SimpleRegressionNN(input_dim, hidden_dim)
+
+**Example 3** (Use L2 Regularization for Better Generalization):
+Previous Model:
+def load_model(X_train, y_train):
+    import torch.nn as nn
+    class SimpleRegressionNN(nn.Module):
+        def __init__(self, input_dim, hidden_dim):
+            super(SimpleRegressionNN, self).__init__()
+            self.fc1 = nn.Linear(input_dim, hidden_dim)
+            self.relu = nn.ReLU()
+            self.fc2 = nn.Linear(hidden_dim, 1)
+        def forward(self, x):
+            x = self.fc1(x)
+            x = self.relu(x)
+            x = self.fc2(x)
+            return x
+    input_dim = X_train.shape[1]
+    hidden_dim = 64
+    return SimpleRegressionNN(input_dim, hidden_dim)
+
+Metrics:
+Mean Squared Error: 135.0
+R^2 Score: 0.91
+
+Extra Info:
+Overfitting is suspected due to low training loss and higher validation loss.
+
+Suggested Improvement:
+Introduce L2 regularization to reduce overfitting and improve generalization:
+def load_model(X_train, y_train):
+    import torch.nn as nn
+    class SimpleRegressionNN(nn.Module):
+        def __init__(self, input_dim, hidden_dim):
+            super(SimpleRegressionNN, self).__init__()
+            self.fc1 = nn.Linear(input_dim, hidden_dim)
+            self.relu = nn.ReLU()
+            self.fc2 = nn.Linear(hidden_dim, 1)
+        def forward(self, x):
+            x = self.fc1(x)
+            x = self.relu(x)
+            x = self.fc2(x)
+            return x
+    input_dim = X_train.shape[1]
+    hidden_dim = 64
+    model = SimpleRegressionNN(input_dim, hidden_dim)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.001, weight_decay=0.01)  # L2 regularization (weight decay)
+    return model, optimizer
+
+**Example 4** (Change Loss Function for Specific Needs):
+Previous Model:
+def load_model(X_train, y_train):
+    import torch.nn as nn
+    class SimpleRegressionNN(nn.Module):
+        def __init__(self, input_dim, hidden_dim):
+            super(SimpleRegressionNN, self).__init__()
+            self.fc1 = nn.Linear(input_dim, hidden_dim)
+            self.relu = nn.ReLU()
+            self.fc2 = nn.Linear(hidden_dim, 1)
+        def forward(self, x):
+            x = self.fc1(x)
+            x = self.relu(x)
+            x = self.fc2(x)
+            return x
+    input_dim = X_train.shape[1]
+    hidden_dim = 64
+    return SimpleRegressionNN(input_dim, hidden_dim)
+
+Metrics:
+Mean Squared Error: 150.0
+R^2 Score: 0.88
+
+Extra Info:
+High sensitivity to outliers has been observed in the data.
+
+Suggested Improvement:
+Switch from Mean Squared Error (MSE) loss to Huber Loss to reduce sensitivity to outliers:
+def load_model(X_train, y_train):
+    import torch.nn as nn
+    class SimpleRegressionNN(nn.Module):
+        def __init__(self, input_dim, hidden_dim):
+            super(SimpleRegressionNN, self).__init__()
+            self.fc1 = nn.Linear(input_dim, hidden_dim)
+            self.relu = nn.ReLU()
+            self.fc2 = nn.Linear(hidden_dim, 1)
+        def forward(self, x):
+            x = self.fc1(x)
+            x = self.relu(x)
+            x = self.fc2(x)
+            return x
+    input_dim = X_train.shape[1]
+    hidden_dim = 64
+    model = SimpleRegressionNN(input_dim, hidden_dim)
+    criterion = nn.SmoothL1Loss()  # Huber Loss
+    return model, criterion
+
+Please ensure all necessary imports are included within the function.
+Provide only executable Python code for the improved model without any comments, explanations, or markdown formatting.
+
+Output:
+Provide only the improved Python code that can replace the current model.
+
