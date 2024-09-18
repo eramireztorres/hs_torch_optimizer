@@ -15,7 +15,7 @@ api_key = os.getenv('OPENAI_API_KEY')
 def select_model_cli(data,
                      
         history_file_path: str = 'model_history.joblib',
-        model: str = 'gpt-4o',
+        model: str = 'gpt-4o-mini',
         iterations: int = 5,
         extra_info: str = 'Not available',  
         batch_size: int = 32,
@@ -32,7 +32,7 @@ def select_model_cli(data,
       'X_test', 'y_test'. These should be NumPy arrays or torch tensors representing the feature and target datasets 
       for model training and evaluation.
     - history_file_path (str, optional): Path to the joblib file where the model history will be stored. The history includes models, their hyperparameters, and performance metrics for each iteration. Default is 'model_history.joblib'.
-    - model (str, optional): The name of the LLM model to use for generating suggestions and improvements for models and hyperparameters. Defaults to 'gpt-4o'.
+    - model (str, optional): The name of the LLM model to use for generating suggestions and improvements for models and hyperparameters. Defaults to 'gpt-4o-mini'.
     - iterations (int, optional): The number of iterations to run, where each iteration involves training a model, evaluating its performance, and generating improvements. Default is 5.
     - extra_info (str, optional): Additional context or information to pass to the LLM, such as class imbalance or noisy labels. Default is 'Not available'.
     - batch_size (int, optional): Batch size for model training. Default is 32.
