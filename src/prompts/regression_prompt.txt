@@ -45,7 +45,7 @@ Extra Info:
 Not available
 
 Suggested Improvement:
-Since the model is already performing well, a small adjustment in the number of hidden units could further improve the performance:
+Since the model is already performing well, a small adjustment in the number of hidden units, and additional fine-tuning (like learning rate or adding weight decay) could further improve the performance:
 def load_model(X_train, y_train):
     import torch.nn as nn
     class SimpleRegressionNN(nn.Module):
@@ -60,8 +60,10 @@ def load_model(X_train, y_train):
             x = self.fc2(x)
             return x
     input_dim = X_train.shape[1]
-    hidden_dim = 128  # Increased hidden units for better performance
-    return SimpleRegressionNN(input_dim, hidden_dim)
+    hidden_dim = 128  # Increased hidden units for better representation
+    model = SimpleRegressionNN(input_dim, hidden_dim)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.0005, weight_decay=0.01)  # Added weight decay and adjusted learning rate
+    return model, optimizer
 
 **Example 2** (Add More Layers for Better Representation):
 Previous Model:
@@ -90,7 +92,7 @@ Extra Info:
 Not available
 
 Suggested Improvement:
-Add additional layers to improve the model’s capacity to learn complex patterns:
+Add additional layers to improve the model’s capacity to learn complex patterns. To make this more robust, we can add dropout between the layers to prevent overfitting and batch normalization to stabilize training:
 def load_model(X_train, y_train):
     import torch.nn as nn
     class SimpleRegressionNN(nn.Module):
@@ -98,18 +100,21 @@ def load_model(X_train, y_train):
             super(SimpleRegressionNN, self).__init__()
             self.fc1 = nn.Linear(input_dim, hidden_dim)
             self.fc2 = nn.Linear(hidden_dim, hidden_dim)
+            self.dropout = nn.Dropout(0.5)  # Added dropout to prevent overfitting
+            self.bn = nn.BatchNorm1d(hidden_dim)  # Added batch normalization
             self.relu = nn.ReLU()
             self.fc3 = nn.Linear(hidden_dim, 1)
         def forward(self, x):
             x = self.fc1(x)
             x = self.relu(x)
             x = self.fc2(x)
-            x = self.relu(x)
+            x = self.dropout(self.bn(self.relu(x)))  # Apply dropout and batch normalization
             x = self.fc3(x)
             return x
     input_dim = X_train.shape[1]
     hidden_dim = 64
-    return SimpleRegressionNN(input_dim, hidden_dim)
+    model = SimpleRegressionNN(input_dim, hidden_dim)
+    return model
 
 **Example 3** (Use L2 Regularization for Better Generalization):
 Previous Model:
@@ -204,6 +209,86 @@ def load_model(X_train, y_train):
     model = SimpleRegressionNN(input_dim, hidden_dim)
     criterion = nn.SmoothL1Loss()  # Huber Loss
     return model, criterion
+  
+**Example 5** (Improvement from Model History):
+Previous Model 1:
+def load_model(X_train, y_train):
+    import torch.nn as nn
+    class SimpleRegressionNN(nn.Module):
+        def __init__(self, input_dim, hidden_dim):
+            super(SimpleRegressionNN, self).__init__()
+            self.fc1 = nn.Linear(input_dim, hidden_dim)
+            self.relu = nn.ReLU()
+            self.fc2 = nn.Linear(hidden_dim, 1)
+        def forward(self, x):
+            x = self.fc1(x)
+            x = self.relu(x)
+            x = self.fc2(x)
+            return x
+    input_dim = X_train.shape[1]
+    hidden_dim = 64
+    return SimpleRegressionNN(input_dim, hidden_dim)
+    
+Metrics for Model 1:
+
+    Mean Squared Error (MSE): 150.5
+    R^2 Score: 0.85 
+
+Previous Model 2:
+def load_model(X_train, y_train):
+    import torch.nn as nn
+    class SimpleRegressionNN(nn.Module):
+        def __init__(self, input_dim, hidden_dim):
+            super(SimpleRegressionNN, self).__init__()
+            self.fc1 = nn.Linear(input_dim, hidden_dim)
+            self.relu = nn.ReLU()
+            self.fc2 = nn.Linear(hidden_dim, hidden_dim)
+            self.fc3 = nn.Linear(hidden_dim, 1)
+        def forward(self, x):
+            x = self.fc1(x)
+            x = self.relu(x)
+            x = self.fc2(x)
+            x = self.relu(x)
+            x = self.fc3(x)
+            return x
+    input_dim = X_train.shape[1]
+    hidden_dim = 64
+    return SimpleRegressionNN(input_dim, hidden_dim)
+
+Metrics for Model 2:
+    Mean Squared Error (MSE): 130.3
+    R^2 Score: 0.89
+
+Suggested Improvement Based on Model History:
+Analysis of Previous Models:
+    From Model 1 to Model 2, we observe an improvement in MSE and R^2 scores. The addition of a second hidden layer helped improve overall performance.
+    However, further performance gains could be made by addressing potential overfitting and ensuring that the model generalizes well, particularly when deeper architectures are involved. We will add dropout and batch normalization to reduce overfitting and further stabilize training. 
+def load_model(X_train, y_train):
+    import torch.nn as nn
+    class SimpleRegressionNN(nn.Module):
+        def __init__(self, input_dim, hidden_dim):
+            super(SimpleRegressionNN, self).__init__()
+            self.fc1 = nn.Linear(input_dim, hidden_dim)
+            self.fc2 = nn.Linear(hidden_dim, hidden_dim)
+            self.dropout = nn.Dropout(0.5)  # Dropout to prevent overfitting
+            self.bn = nn.BatchNorm1d(hidden_dim)  # Batch normalization for stabilization
+            self.relu = nn.ReLU()
+            self.fc3 = nn.Linear(hidden_dim, 1)
+        def forward(self, x):
+            x = self.fc1(x)
+            x = self.relu(x)
+            x = self.fc2(x)
+            x = self.dropout(self.bn(self.relu(x)))  # Apply dropout and batch normalization
+            x = self.fc3(x)
+            return x
+
+    input_dim = X_train.shape[1]
+    hidden_dim = 128  # Increased hidden units for better performance
+    model = SimpleRegressionNN(input_dim, hidden_dim)
+    
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.0005, weight_decay=0.01)  # Lowered learning rate and added weight decay
+    return model, optimizer
+ 
 
 Please ensure all necessary imports are included within the function.
 Provide only executable Python code for the improved model without any comments, explanations, or markdown formatting.

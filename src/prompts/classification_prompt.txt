@@ -107,7 +107,7 @@ Extra Info:
 Not available
 
 Suggested Improvement:
-Add additional layers to improve the model’s ability to capture complex patterns in the data:
+Add additional layers to improve the model’s ability to capture complex patterns in the data. To make it more robust, we can also suggest adding batch normalization between the layers to help stabilize training:
 def load_model(X_train, y_train, hidden_dim=64):
     import torch.nn as nn
     class SimpleClassificationNN(nn.Module):
@@ -115,18 +115,20 @@ def load_model(X_train, y_train, hidden_dim=64):
             super(SimpleClassificationNN, self).__init__()
             self.fc1 = nn.Linear(input_dim, hidden_dim)
             self.fc2 = nn.Linear(hidden_dim, hidden_dim)
+            self.bn = nn.BatchNorm1d(hidden_dim)  # Adding batch normalization
             self.relu = nn.ReLU()
             self.fc3 = nn.Linear(hidden_dim, output_dim)
         def forward(self, x):
             x = self.fc1(x)
             x = self.relu(x)
-            x = self.fc2(x)
+            x = self.bn(self.fc2(x))  # Apply batch normalization
             x = self.relu(x)
             x = self.fc3(x)
             return x
     input_dim = X_train.shape[1]
     output_dim = len(set(y_train))
-    return SimpleClassificationNN(input_dim, hidden_dim, output_dim)
+    model = SimpleClassificationNN(input_dim, hidden_dim, output_dim)
+    return model
 
 **Example 3** (Class Imbalance):
 Previous Model:
@@ -163,24 +165,26 @@ Extra Info:
 Binary classification problem with a class imbalance: there are 4 times more instances of class 0 than class 1.
 
 Suggested Improvement:
-Use weighted cross-entropy loss to address the class imbalance by penalizing the majority class (class 0) more heavily:
+Use weighted cross-entropy loss to address the class imbalance by penalizing the majority class (class 0) more heavily. Another improvement can involve adding a different model architecture, such as using dropout in addition to weighted loss, to further improve robustness against overfitting on the majority class:
 def load_model(X_train, y_train, hidden_dim=64):
     import torch.nn as nn
     class SimpleClassificationNN(nn.Module):
         def __init__(self, input_dim, hidden_dim, output_dim):
             super(SimpleClassificationNN, self).__init__()
             self.fc1 = nn.Linear(input_dim, hidden_dim)
+            self.dropout = nn.Dropout(0.5)  # Adding dropout to avoid overfitting
             self.relu = nn.ReLU()
             self.fc2 = nn.Linear(hidden_dim, output_dim)
         def forward(self, x):
             x = self.fc1(x)
+            x = self.dropout(x)  # Apply dropout
             x = self.relu(x)
             x = self.fc2(x)
             return x
     input_dim = X_train.shape[1]
     output_dim = len(set(y_train))
     model = SimpleClassificationNN(input_dim, hidden_dim, output_dim)
-    class_weights = torch.FloatTensor([0.25, 0.75])  # Adjust class weights based on imbalance
+    class_weights = torch.FloatTensor([0.25, 0.75])  # Class weights for imbalance
     criterion = nn.CrossEntropyLoss(weight=class_weights)
     return model, criterion
 
@@ -311,6 +315,103 @@ def load_model(X_train, y_train, hidden_dim=64, smoothing=0.1):
 
     criterion = LabelSmoothingCrossEntropy(smoothing=smoothing)
     return model, criterion
+
+**Example 6** (History of Model Improvements):
+Previous Model 1:
+def load_model(X_train, y_train, hidden_dim=64):
+    import torch.nn as nn
+    class SimpleClassificationNN(nn.Module):
+        def __init__(self, input_dim, hidden_dim, output_dim):
+            super(SimpleClassificationNN, self).__init__()
+            self.fc1 = nn.Linear(input_dim, hidden_dim)
+            self.relu = nn.ReLU()
+            self.fc2 = nn.Linear(hidden_dim, output_dim)
+        def forward(self, x):
+            x = self.fc1(x)
+            x = self.relu(x)
+            x = self.fc2(x)
+            return x
+    input_dim = X_train.shape[1]
+    output_dim = len(set(y_train))
+    return SimpleClassificationNN(input_dim, hidden_dim, output_dim)
+
+Metrics for Model 1:
+    Global:
+        Accuracy: 0.85
+        Precision: 0.83
+        Recall: 0.82
+        F1 Score: 0.82
+    Per-Class:
+        Precision per class: [0.87, 0.75]
+        Recall per class: [0.85, 0.70]
+        F1 Score per class: [0.86, 0.72]
+
+Previous Model 2:
+def load_model(X_train, y_train, hidden_dim=128):
+    import torch.nn as nn
+    class SimpleClassificationNN(nn.Module):
+        def __init__(self, input_dim, hidden_dim, output_dim):
+            super(SimpleClassificationNN, self).__init__()
+            self.fc1 = nn.Linear(input_dim, hidden_dim)
+            self.relu = nn.ReLU()
+            self.fc2 = nn.Linear(hidden_dim, output_dim)
+        def forward(self, x):
+            x = self.fc1(x)
+            x = self.relu(x)
+            x = self.fc2(x)
+            return x
+    input_dim = X_train.shape[1]
+    output_dim = len(set(y_train))
+    return SimpleClassificationNN(input_dim, hidden_dim=128, output_dim)
+
+Metrics for Model 2:
+    Global:
+        Accuracy: 0.90
+        Precision: 0.89
+        Recall: 0.88
+        F1 Score: 0.89
+    Per-Class:
+        Precision per class: [0.92, 0.85]
+        Recall per class: [0.91, 0.83]
+        F1 Score per class: [0.91, 0.84]
+        
+Suggested Improvement Based on Model History:
+Analysis of Previous Models:
+    From Model 1 to Model 2, we see a consistent improvement in both global and per-class metrics, particularly in class 1, which was underperforming in Model 1. The increase in hidden units improved both global performance and per-class recall for the minority class.
+    However, there is still a performance gap between class 0 (majority class) and class 1 (minority class) in Model 2. Class 1's F1 score is still lower, indicating it might still be struggling with some aspects of the data.
+    To address this, we will increase model complexity further by adding another hidden layer, introduce dropout to prevent overfitting on the majority class, and fine-tune the learning rate to ensure the model generalizes well for both classes. Additionally, we will use weighted cross-entropy loss to help balance the class performance more effectively.
+def load_model(X_train, y_train, hidden_dim=128):
+    import torch.nn as nn
+    class SimpleClassificationNN(nn.Module):
+        def __init__(self, input_dim, hidden_dim, output_dim):
+            super(SimpleClassificationNN, self).__init__()
+            self.fc1 = nn.Linear(input_dim, hidden_dim)
+            self.fc2 = nn.Linear(hidden_dim, hidden_dim)
+            self.dropout = nn.Dropout(0.5)  # Dropout to prevent overfitting
+            self.relu = nn.ReLU()
+            self.fc3 = nn.Linear(hidden_dim, output_dim)
+        def forward(self, x):
+            x = self.fc1(x)
+            x = self.relu(x)
+            x = self.fc2(x)
+            x = self.dropout(x)  # Apply dropout to the second layer
+            x = self.relu(x)
+            x = self.fc3(x)
+            return x
+
+    input_dim = X_train.shape[1]
+    output_dim = len(set(y_train))
+    model = SimpleClassificationNN(input_dim, hidden_dim, output_dim)
+    
+    # Weighted cross-entropy to address class imbalance
+    class_weights = torch.FloatTensor([0.3, 0.7])  # Adjusted weights for class 0 and class 1
+    criterion = nn.CrossEntropyLoss(weight=class_weights)
+    
+    # Fine-tuning the learning rate for better generalization
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.0005, weight_decay=0.01)  # Added weight decay to prevent overfitting
+
+    return model, optimizer, criterion
+
 
 
 Please ensure all necessary imports are included within the function.
