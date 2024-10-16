@@ -33,6 +33,7 @@ class NNLLMImprover:
         prompt = self._format_prompt(current_model_code, metrics, extra_info)
         try:
             improved_code = self.llm_model.get_response(prompt)
+           
             return improved_code
         except Exception as e:
             logging.error(f"Error querying LLM: {e}")
