@@ -31,19 +31,37 @@ This project aims to optimize neural network models using PyTorch by iterating t
 
 ## Export the API keys of your models
 
-Before using, make sure to export your OpenAI API key as an environment variable. 
+### OpenAI Models
+
+For OpenAI models, export your API key as an environment variable:
 
 Linux or macOS:
 
 ```bash
-export OPENAI_API_KEY='your_api_key_here'
+export OPENAI_API_KEY='your_openai_api_key_here'
 ```
 
 Or in windows:
 
 ```bash
-setx OPENAI_API_KEY=your_api_key_here
+setx OPENAI_API_KEY "your_openai_api_key_here"
 ```
+
+### Llama Models via OpenRouter
+
+To use Llama models with OpenRouter, follow these steps:
+
+1. Visit [OpenRouter](https://openrouter.ai/) and log in or create an account.
+2. Navigate to the API keys section in your account dashboard and generate a new API key.
+3. Export the API key as an environment variable:
+   - For Linux or macOS:
+     ```bash
+     export OPENROUTER_API_KEY='your_openrouter_api_key_here'
+     ```
+   - For Windows:
+     ```bash
+     setx OPENROUTER_API_KEY "your_openrouter_api_key_here"
+     ```
 
 ## Run the App as CLI with Options
 
@@ -64,10 +82,10 @@ torch_optimize [-h] --data DATA [--history-file-path HISTORY_FILE_PATH] [--model
   Path to a `.joblib` file containing training and test data. The file should include a dictionary with keys like `'X_train'`, `'y_train'`, `'X_test'`, and `'y_test'`. These should be NumPy arrays representing the feature and target datasets for model training and evaluation.
 
 - **`--history-file-path HISTORY_FILE_PATH`, `-hfp HISTORY_FILE_PATH`**:  
-  Path to the `.joblib` file where the model history will be saved. The history includes models, their hyperparameters, and performance metrics for each iteration. Default is `'model_history.joblib'`.
+    Path to the `.txt`  or `.joblib`  file where the model history will be saved. The history includes models, their hyperparameters, and performance metrics for each iteration. Default is `'model_history.joblib'`.
 
 - **`--model MODEL`, `-m MODEL`**:  
-  The name of the LLM model to use for generating suggestions and improvements for models and hyperparameters. Defaults to `'gpt-4o-mini'`.
+  The name of the LLM model to use for generating suggestions and improvements for models and hyperparameters. Defaults to `'meta-llama/llama-3.1-405b-instruct:free'`.
 
 - **`--iterations ITERATIONS`, `-i ITERATIONS`**:  
   The number of iterations to run. Each iteration involves training a model, evaluating its performance, and generating improvements. Default is `5`.
@@ -83,7 +101,7 @@ torch_optimize [-h] --data DATA [--history-file-path HISTORY_FILE_PATH] [--model
 Here’s an example of how to run the app with custom data, model history path, iterations, and epochs:
 
 ```bash
-torch_optimize -d my_classification_data.joblib -hfp output_model_history.joblib -i 10 --epochs 20
+torch_optimize -d my_classification_data.joblib -hfp output_model_history.joblib -i 10 --epochs 20 -m gpt-4o
 ```
 
 ### Example 2

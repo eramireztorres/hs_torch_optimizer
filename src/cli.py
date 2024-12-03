@@ -5,17 +5,17 @@ sys.path.append(os.path.dirname(__file__))
 
 from cli_decorator import cli_decorator
 from main_controller import MainController, is_regression, is_image
-from gpt import Gpt4AnswerGenerator
 from llm_improver import NNLLMImprover, NNRegressionLLMImprover, NNImageLLMImprover, NNImageRegressionLLMImprover
 
+from model_api_factory import ModelAPIFactory
+
 #%%
-api_key = os.getenv('OPENAI_API_KEY')
 
 @cli_decorator
 def select_model_cli(data,
-                     
+        model: str = 'meta-llama/llama-3.1-405b-instruct:free',
+        model_provider: str = None,                     
         history_file_path: str = 'model_history.joblib',
-        model: str = 'gpt-4o-mini',
         iterations: int = 5,
         extra_info: str = 'Not available',  
         batch_size: int = 32,
@@ -48,8 +48,10 @@ def select_model_cli(data,
     - RuntimeError: If any issue arises during the model training or optimization process.
     """
     
-    # Initialize the LLM generator
-    generator = Gpt4AnswerGenerator(api_key, model=model)
+    if not model_provider:
+        model_provider = ModelAPIFactory.get_provider_from_model(model)
+
+    print(f"Using model: {model} (provider: {model_provider})")
 
     # Determine if the task is regression or classification
     is_regression_bool = is_regression(load(data)['y_train'])
@@ -57,28 +59,15 @@ def select_model_cli(data,
     # Determine if the input data is images or flat feature vectors
     is_image_bool = is_image(load(data)['X_train'])
 
-    # Check if it’s a regression task and assign the appropriate LLM improver
-    if is_regression_bool:
-        if is_image_bool:
-            llm_improver = NNImageRegressionLLMImprover(generator)
-        else:
-            llm_improver = NNRegressionLLMImprover(generator)
-    else:
-        if is_image_bool:
-            llm_improver = NNImageLLMImprover(generator)
-        else:
-            llm_improver = NNLLMImprover(generator)
-
     # Initialize and run the main controller with the extra_info passed in
-    controller = MainController(data, llm_improver, history_file_path, 
+    controller = MainController(data, model_provider, history_file_path, 
+                                model=model,
                                 is_regression_bool=is_regression_bool, 
                                 is_image=is_image_bool, 
                                 extra_info=extra_info, 
                                 batch_size=batch_size, lr=lr, epochs=epochs)
     
     controller.run(iterations=iterations)
-
-
 
 
 

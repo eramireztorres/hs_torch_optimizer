@@ -11,28 +11,45 @@ from model_trainer import NNModelTrainer, NNRegressionModelTrainer
 from llm_improver import NNLLMImprover, NNRegressionLLMImprover, NNImageLLMImprover, NNImageRegressionLLMImprover
 from model_history_manager import ModelHistoryManager
 from dynamic_model_updater import DynamicModelUpdater, DynamicRegressionModelUpdater, DynamicImageModelUpdater, DynamicImageRegressionModelUpdater
-from gpt import Gpt4AnswerGenerator
+from model_api_factory import ModelAPIFactory
 
 
 
 #%%
 
+# def __init__(self, joblib_file_path, model_provider, history_file_path, model=None, is_regression_bool=False, 
+#              extra_info="Not available", output_models_path=None):
+#     """
+#     Initialize the MainController.
+
+#     Args:
+#         joblib_file_path (str): Path to the joblib file containing training and test data.
+#         model_provider (str): The provider name for the LLM (e.g., "openai", "llama", "gemini").
+#         history_file_path: Path to the file where model history will be stored.
+#         is_regression_bool (bool): Whether the task is regression.
+#         extra_info (str): Additional information to include in the LLM prompt (e.g., class imbalance, noisy labels).
+#         output_models_path (str): Directory where the trained models will be saved. If None, models will not be saved.
+#     """
+
 class MainController:
-    def __init__(self, joblib_file_path, llm_improver, history_file_path, is_regression_bool=False, 
+    def __init__(self, joblib_file_path, model_provider, history_file_path, model=None, is_regression_bool=False, 
                  is_image=False, extra_info="Not available", batch_size=32, lr=0.001, epochs=10):
         """
         Initialize the MainController.
         """
         self.joblib_file_path = joblib_file_path
-        self.llm_improver = llm_improver
         self.history_manager = ModelHistoryManager(history_file_path=history_file_path)
         self.data = self._load_data()
         self.extra_info = extra_info  # Store the additional information
         self.model_trainer = None
         self.is_regression = is_regression_bool
+        self.is_image = is_image
         self.batch_size = self._validate_batch_size(batch_size)  # Validate batch size
         self.lr = self._validate_learning_rate(lr)  # Validate learning rate
         self.epochs = epochs
+        
+        # Dynamically initialize the LLM model
+        self.llm_improver = self._initialize_llm_improver(model_provider, model)
 
         # Choose between regression and classification, also handle image data
         if is_regression_bool:
@@ -45,6 +62,26 @@ class MainController:
                 self.dynamic_updater = DynamicImageModelUpdater()
             else:
                 self.dynamic_updater = DynamicModelUpdater()
+
+    def _initialize_llm_improver(self, model_provider, model):
+        """
+        Initialize the LLM improver dynamically based on the provider.
+        """
+        llm_model = ModelAPIFactory.get_model_api(provider=model_provider, model=model)   
+   
+        # Check if it’s a regression task and assign the appropriate LLM improver
+        if self.is_regression:
+            if self.is_image:
+                llm_improver = NNImageRegressionLLMImprover(llm_model)
+            else:
+                llm_improver = NNRegressionLLMImprover(llm_model)
+        else:
+            if self.is_image:
+                llm_improver = NNImageLLMImprover(llm_model)
+            else:
+                llm_improver = NNLLMImprover(llm_model)
+        
+        return llm_improver
 
     def _validate_batch_size(self, batch_size):
         """Ensure the batch size is valid (positive integer)."""
@@ -155,16 +192,32 @@ class MainController:
                 batch_size=self.batch_size, lr=self.lr
             )
 
+    # def _clean_code(self, code):
+    #     """
+    #     Clean the LLM-generated code to remove unnecessary markdown formatting.
+    #     """
+    #     if not code:
+    #         return ""
+    #     # Remove markdown syntax and any language-specific tags
+    #     code = re.sub(r'^```.*\n', '', code).strip().strip('```').strip()
+    #     code = re.sub(r'^python\n', '', code).strip()
+    #     return code
+
     def _clean_code(self, code):
         """
         Clean the LLM-generated code to remove unnecessary markdown formatting.
         """
         if not code:
+            logging.warning("Received empty code from LLM.")
             return ""
-        # Remove markdown syntax and any language-specific tags
-        code = re.sub(r'^```.*\n', '', code).strip().strip('```').strip()
-        code = re.sub(r'^python\n', '', code).strip()
-        return code
+        try:
+            code = re.sub(r'^```.*\n', '', code).strip().strip('```').strip()
+            code = re.sub(r'^python\n', '', code).strip()
+            return code
+        except Exception as e:
+            logging.error(f"Failed to clean the code: {e}")
+            return code  # Return uncleaned code as fallback
+
 
     def _get_dynamic_model_code(self):
         """
