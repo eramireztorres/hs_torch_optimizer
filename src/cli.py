@@ -1,13 +1,9 @@
-from joblib import load
 import sys
 import os
 sys.path.append(os.path.dirname(__file__))
 
 from cli_decorator import cli_decorator
-from main_controller import MainController, is_regression, is_image
-from llm_improver import NNLLMImprover, NNRegressionLLMImprover, NNImageLLMImprover, NNImageRegressionLLMImprover
-
-from model_api_factory import ModelAPIFactory
+from main_controller import MainController, ModelAPIFactory
 
 #%%
 
@@ -53,17 +49,11 @@ def select_model_cli(data,
 
     print(f"Using model: {model} (provider: {model_provider})")
 
-    # Determine if the task is regression or classification
-    is_regression_bool = is_regression(load(data)['y_train'])
-    
-    # Determine if the input data is images or flat feature vectors
-    is_image_bool = is_image(load(data)['X_train'])
-
     # Initialize and run the main controller with the extra_info passed in
     controller = MainController(data, model_provider, history_file_path, 
                                 model=model,
-                                is_regression_bool=is_regression_bool, 
-                                is_image=is_image_bool, 
+                                # is_regression_bool=is_regression_bool, 
+                                # is_image=is_image_bool, 
                                 extra_info=extra_info, 
                                 batch_size=batch_size, lr=lr, epochs=epochs)
     

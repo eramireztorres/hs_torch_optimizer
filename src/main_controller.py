@@ -1,4 +1,3 @@
-import joblib
 import logging
 import numpy as np
 import re
@@ -12,47 +11,37 @@ from llm_improver import NNLLMImprover, NNRegressionLLMImprover, NNImageLLMImpro
 from model_history_manager import ModelHistoryManager
 from dynamic_model_updater import DynamicModelUpdater, DynamicRegressionModelUpdater, DynamicImageModelUpdater, DynamicImageRegressionModelUpdater
 from model_api_factory import ModelAPIFactory
+from data_loader import DataLoader  # Import the new DataLoader
 
 
 
 #%%
 
-# def __init__(self, joblib_file_path, model_provider, history_file_path, model=None, is_regression_bool=False, 
-#              extra_info="Not available", output_models_path=None):
-#     """
-#     Initialize the MainController.
-
-#     Args:
-#         joblib_file_path (str): Path to the joblib file containing training and test data.
-#         model_provider (str): The provider name for the LLM (e.g., "openai", "llama", "gemini").
-#         history_file_path: Path to the file where model history will be stored.
-#         is_regression_bool (bool): Whether the task is regression.
-#         extra_info (str): Additional information to include in the LLM prompt (e.g., class imbalance, noisy labels).
-#         output_models_path (str): Directory where the trained models will be saved. If None, models will not be saved.
-#     """
-
 class MainController:
-    def __init__(self, joblib_file_path, model_provider, history_file_path, model=None, is_regression_bool=False, 
-                 is_image=False, extra_info="Not available", batch_size=32, lr=0.001, epochs=10):
+    def __init__(self, joblib_file_path, model_provider, history_file_path, model=None, is_regression=None, 
+                 is_image=None, extra_info="Not available", batch_size=32, lr=0.001, epochs=10):
         """
         Initialize the MainController.
         """
         self.joblib_file_path = joblib_file_path
         self.history_manager = ModelHistoryManager(history_file_path=history_file_path)
+        self.is_regression = is_regression
+        self.is_image = is_image        
+        
         self.data = self._load_data()
         self.extra_info = extra_info  # Store the additional information
         self.model_trainer = None
-        self.is_regression = is_regression_bool
-        self.is_image = is_image
+
         self.batch_size = self._validate_batch_size(batch_size)  # Validate batch size
         self.lr = self._validate_learning_rate(lr)  # Validate learning rate
-        self.epochs = epochs
+        self.epochs = epochs     
+        
         
         # Dynamically initialize the LLM model
         self.llm_improver = self._initialize_llm_improver(model_provider, model)
 
         # Choose between regression and classification, also handle image data
-        if is_regression_bool:
+        if is_regression:
             if is_image:
                 self.dynamic_updater = DynamicImageRegressionModelUpdater()
             else:
@@ -95,13 +84,48 @@ class MainController:
             raise ValueError(f"Learning rate must be between 0 and 1, got {lr}")
         return lr
 
+    # def _load_data(self):
+    #     """
+    #     Load the training and test data from the joblib file.
+    #     """
+    #     try:
+    #         data = joblib.load(self.joblib_file_path)
+    #         logging.info(f"Data loaded successfully from {self.joblib_file_path}")
+    #         return data
+    #     except Exception as e:
+    #         logging.error(f"Failed to load data from {self.joblib_file_path}: {e}")
+    #         return None
+    
     def _load_data(self):
         """
-        Load the training and test data from the joblib file.
+        Load the training and test data using the DataLoader.
+    
+        Returns:
+            dict: A dictionary containing X_train, y_train, X_test, and y_test.
         """
         try:
-            data = joblib.load(self.joblib_file_path)
-            logging.info(f"Data loaded successfully from {self.joblib_file_path}")
+            data = DataLoader.load_data(self.joblib_file_path)  # Handle both file and directory inputs
+            logging.info(f"Data loaded successfully from {self.joblib_file_path}")           
+                      
+            
+            # Choose between regression and classification, also handle image data
+            if self.is_regression is None:
+                self.is_regression = is_regression(data['y_train'])
+            if self.is_image is None:
+                self.is_image = is_image(data['X_train'])
+                
+            # Choose between regression and classification, also handle image data
+            if self.is_regression:
+                if is_image:
+                    self.dynamic_updater = DynamicImageRegressionModelUpdater()
+                else:
+                    self.dynamic_updater = DynamicRegressionModelUpdater()
+            else:
+                if self.is_image:
+                    self.dynamic_updater = DynamicImageModelUpdater()
+                else:
+                    self.dynamic_updater = DynamicModelUpdater()
+                
             return data
         except Exception as e:
             logging.error(f"Failed to load data from {self.joblib_file_path}: {e}")
