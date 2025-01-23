@@ -1,4 +1,4 @@
-#LLM-Powered Neural Network Model Optimizer Project
+# LLM-Powered Neural Network Model Optimizer Project
 
 This project aims to optimize neural network models using PyTorch by iterating through model training, evaluation, and improvements suggested by an LLM (Large Language Model). The system dynamically improves neural network architectures and hyperparameters based on input data and model performance history.
 
