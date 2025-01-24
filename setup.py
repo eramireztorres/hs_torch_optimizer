@@ -15,17 +15,18 @@ setup(
         '': ['prompts/*.txt'],  # Include all .txt files in the prompts folder
     },
     install_requires=[
-        'torch',               # Core PyTorch library
-        'torchvision',          # For image datasets and transforms
-        'joblib',               # For saving/loading models and data
-        'scikit-learn',         # For metrics and data preprocessing
-        'openai',               # For LLM interaction
-        'numpy',                # NumPy for array handling
-        'pandas',               # For data manipulation
-        'pytz',                 # Timezone handling if needed
-        'matplotlib',           # For plotting (optional, if visualizations are needed)
-        'tqdm',                  # For progress bars during training
-        'requests'
+        'torch==2.4.1',               # Core PyTorch library
+        'torchvision==0.19.1',          # For image datasets and transforms
+        'joblib==1.4.2',               # For saving/loading models and data
+        'scikit-learn==1.5.2',         # For metrics and data preprocessing
+        'openai==1.45.1',               # For LLM interaction
+        'numpy==2.0.2',                # NumPy for array handling
+        'pandas==2.2.2',               # For data manipulation
+        'pytz==2024.2',                 # Timezone handling if needed
+        'matplotlib==3.9.2',           # For plotting (optional, if visualizations are needed)
+        'tqdm==4.66.5',                  # For progress bars during training
+        'requests==2.32.3',
+        'httpx==0.27.2'
     ],
     entry_points={
         'console_scripts': [
