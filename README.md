@@ -49,7 +49,7 @@ setx OPENAI_API_KEY "your_openai_api_key_here"
 
 ### Other Models via OpenRouter
 
-To use Llama, Gemini or models with OpenRouter, follow these steps:
+To use Llama, Gemini or other models with OpenRouter, follow these steps:
 
 1. Visit [OpenRouter](https://openrouter.ai/) and log in or create an account.
 2. Navigate to the API keys section in your account dashboard and generate a new API key.
@@ -75,19 +75,33 @@ torch_optimize [-h] --data DATA [--history-file-path HISTORY_FILE_PATH] [--model
 
 ### Supported Input File Formats
 
-The application now supports the following file formats for input:
-- `.joblib` (default format)
-- `.csv`
-- `.json`
-- `.txt` or `.md`
+The application supports the following input formats:
 
-Each file must contain `X_train`, `y_train`, `X_test`, and `y_test` data. Examples:
+1. **Pre-split `.joblib` file**:  
+   A Python dictionary containing the keys:  
+   - `'X_train'`, `'y_train'` (training data),  
+   - `'X_test'`, `'y_test'` (test data).
 
-**CSV Example**:
-```csv
-X_train,y_train,X_test,y_test
-1 2 3,0 1 0,4 5 6,1 0 1
-```
+2. **Pre-split `.csv` files**:  
+   A directory containing the following files:  
+   - `X_train.csv`, `y_train.csv`, `X_test.csv`, and `y_test.csv`.
+
+3. **Unsplit `.joblib` file**:  
+   A Python dictionary containing the keys:  
+   - `'X'` (features: it can be an array of 2-D numpy arrays for the image case),  
+   - `'y'` (targets).  
+   The application will create a validation split from the data (default split ratio is 80/20).
+
+4. **Unsplit `.csv` files**:  
+   A directory containing two files:  
+   - `X.csv` (features),  
+   - `y.csv` (targets).  
+   The application will create a validation split.
+
+5. **Single `.csv` file**:  
+   A single CSV file where:  
+   - All columns except the last are treated as features (`X`),  
+   - The last column is assumed to be the target (`y`).
 
 ### Arguments
 
@@ -95,17 +109,8 @@ X_train,y_train,X_test,y_test
   Show the help message and exit.
 
 - **`--data DATA`, `-d DATA`**:  
-  Path to the input dataset. The following formats are supported:
-  1. **Pre-split `.joblib` file**: A dictionary with keys `'X_train'`, `'y_train'`, `'X_test'`, and `'y_test'`, containing NumPy arrays for feature and target datasets.
-  2. **Pre-split `.csv` files**: A directory containing the files:
-     - `X_train.csv`, `y_train.csv`, `X_test.csv`, and `y_test.csv`.
-  3. **Unsplit `.joblib` file**: A dictionary with keys `'X'` and `'y'`. The application will create a validation split (80/20 by default).
-  4. **Unsplit `.csv` files**: A directory containing `X.csv` (features) and `y.csv` (targets). The application will create a validation split.
-  5. **Single `.csv` file**: A file where:
-     - Columns represent features, and the last column is assumed to be the target (`y`).
-
-  The application automatically handles validation splits for unsplit datasets. Ensure the input format matches one of the above options.
-
+  Path to the input dataset. Supported formats are .joblib files, directories containing .csv files, or a single .csv file.
+  The application handles validation splits automatically for unsplit datasets.
 - **`--history-file-path HISTORY_FILE_PATH`, `-hfp HISTORY_FILE_PATH`**:  
   Path to the `.txt` or `.joblib` file where the model history will be saved. The history includes models, their hyperparameters, and performance metrics for each iteration. Default is `'model_history.joblib'`.
 
