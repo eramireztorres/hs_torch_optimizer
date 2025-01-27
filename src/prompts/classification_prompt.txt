@@ -12,7 +12,8 @@ Additional Information:
 {extra_info}
 
 Task:
-Based on the given model and its performance, suggest improvements. You may either:
+Based on the given classification torch model and its performance, suggest improvements. Your response must only include a single Python function named load_model that defines the model and returns it. Ensure all necessary imports are included within the function. Do not include any explanations, markdown formatting, or extra code outside of this function.
+In the suggested improvements, you may either:
     - Change the architecture of the neural network (e.g., add more layers, adjust activation functions).
     - Adjust the hyperparameters of the current neural network, such as the number of hidden units or learning rate.
     - Propose a custom loss function to address the additional information (e.g., class imbalance, noisy labels).
