@@ -13,7 +13,7 @@ from main_controller import MainController, ModelAPIFactory
 def select_model_cli(data,
         model: str = 'gpt-4o-mini',
         model_provider: str = None,   
-        is_regression: Literal["true", "false"] = "false",                  
+        is_regression: Literal[None, "true", "false"] = None,                  
         history_file_path: str = 'model_history.joblib',
         iterations: int = 10,
         extra_info: str = 'Not available',  
@@ -79,7 +79,8 @@ def select_model_cli(data,
     print(f"Using model: {model} (provider: {model_provider})")
     print(f"Metrics source: {metrics_source}")
     
-    is_regression = is_regression == 'true'
+    if is_regression is None:
+        is_regression = is_regression == 'true'
 
     controller = MainController(data, model_provider, history_file_path, 
                                 model=model,
