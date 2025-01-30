@@ -154,6 +154,17 @@ class MainController:
                 # Train and evaluate the current model
                 X_train, y_train = self.data['X_train'], self.data['y_train']
                 X_val, y_val = self.data['X_test'], self.data['y_test']
+                
+                
+                print(f"X_train shape: {self.data['X_train'].shape}, y_train shape: {self.data['y_train'].shape}")
+                print(f"X_test shape: {self.data['X_test'].shape}, y_test shape: {self.data['y_test'].shape}")
+                
+                print("Checking NaN values in loaded data...")
+                print(f"NaN count in X_train: {np.isnan(self.data['X_train']).sum()}")
+                print(f"NaN count in y_train: {np.isnan(self.data['y_train']).sum()}")
+                print(f"NaN count in X_test: {np.isnan(self.data['X_test']).sum()}")
+                print(f"NaN count in y_test: {np.isnan(self.data['y_test']).sum()}")
+
     
                 # Run the dynamically updated model
                 model = self.dynamic_updater.run_dynamic_model(X_train=X_train, y_train=y_train)

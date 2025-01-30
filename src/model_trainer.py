@@ -371,20 +371,43 @@ class NNRegressionModelTrainer:
         if len(X_train.shape) == 3:  # If shape is (batch_size, height, width)
             X_train = np.expand_dims(X_train, axis=1)
             X_test = np.expand_dims(X_test, axis=1)
+            
+        self.device = device if device else torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        
+        # Ensure that the input data is converted to PyTorch tensors
+        if isinstance(X_train, np.ndarray):
+            X_train = torch.tensor(X_train, dtype=torch.float32)
+            X_test = torch.tensor(X_test, dtype=torch.float32)
+            y_train = torch.tensor(y_train, dtype=torch.float32).view(-1, 1)  # Ensure correct shape
+            y_test = torch.tensor(y_test, dtype=torch.float32).view(-1, 1)  # Ensure correct shape
+
 
         # Split the data into training and validation sets
         self.X_train, self.X_val, self.y_train, self.y_val = train_test_split(X_train, y_train, test_size=0.2, random_state=42)
-        self.X_train = torch.Tensor(self.X_train).to(self.device)
-        self.y_train = torch.Tensor(self.y_train).view(-1, 1).to(self.device)
-        self.X_val = torch.Tensor(self.X_val).to(self.device)
-        self.y_val = torch.Tensor(self.y_val).view(-1, 1).to(self.device)
+        # Debugging NaNs before conversion
+        print("Checking NaNs in training data before tensor conversion:")
+        print(f"NaN count in X_train: {np.isnan(X_train).sum()}")
+        print(f"NaN count in y_train: {np.isnan(y_train).sum()}")
+        print(f"NaN count in X_test: {np.isnan(X_test).sum()}")
+        print(f"NaN count in y_test: {np.isnan(y_test).sum()}")
+        
+        # Convert to tensors
+        self.X_train = torch.Tensor(X_train).to(self.device)
+        self.y_train = torch.Tensor(y_train).view(-1, 1).to(self.device)
+        self.X_test = torch.Tensor(X_test).to(self.device)
+        self.y_test = torch.Tensor(y_test).view(-1, 1).to(self.device)
+        
+        # Debugging after tensor conversion
+        print("Checking NaNs after tensor conversion:")
+        print(f"NaN count in X_train tensor: {torch.isnan(self.X_train).sum().item()}")
+        print(f"NaN count in y_train tensor: {torch.isnan(self.y_train).sum().item()}")
+
 
         # Convert test data
         self.X_test = torch.Tensor(X_test).to(self.device)
         self.y_test = torch.Tensor(y_test).view(-1, 1).to(self.device)
 
         self.batch_size = batch_size
-        self.device = device if device else torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = self.model.to(self.device)
 
         # Add a patience parameter for early stopping
@@ -411,6 +434,17 @@ class NNRegressionModelTrainer:
                 inputs, targets = inputs.to(self.device), targets.to(self.device)
                 self.optimizer.zero_grad()
                 outputs = self.model(inputs)
+                
+                if torch.isnan(outputs).sum().item() > 0:
+                    print(f"WARNING: NaN detected in model outputs at epoch {epoch + 1}")
+                
+                loss = self.criterion(outputs, targets)
+                
+                if torch.isnan(loss).sum().item() > 0:
+                    print(f"ERROR: Loss became NaN at epoch {epoch + 1}! Stopping training.")
+                    return  # Exit training to prevent further NaN propagation
+                
+                
                 loss = self.criterion(outputs, targets)
                 loss.backward()
                 self.optimizer.step()
