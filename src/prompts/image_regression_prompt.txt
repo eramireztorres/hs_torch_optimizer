@@ -14,8 +14,8 @@ Additional Information:
 Task:
 Based on the given image regression torch model and its performance, suggest improvements. Your response must only include a single Python function named load_model that defines the model and returns it. Ensure all necessary imports are included within the function. Do not include any explanations, markdown formatting, or extra code outside of this function.
 In the suggested improvements, you may either:
-    - Adjust the architecture (e.g., add more convolutional layers, change the kernel size, or modify activation functions).
-    - Adjust the hyperparameters, such as the learning rate, number of filters, or regularization techniques.
+    - Adjust the architecture (e.g., add more convolutional layers, change the kernel size, or modify activation functions).You may use some that are not included in the examples.
+    - Modify the hyperparameters, such as the learning rate, number of filters, or regularization techniques.
     - Introduce advanced techniques like batch normalization, dropout, or additional regularization methods.
     - Suggest methods to prevent overfitting or underfitting in the regression model.
     - Propose some other advanced neural network architecture that improves image regression other than CNN.

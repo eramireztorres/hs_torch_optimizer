@@ -14,12 +14,12 @@ Additional Information:
 Task:
 Based on the given regression torch model and its performance, suggest improvements. Your response must only include a single Python function named load_model that defines the model and returns it. Ensure all necessary imports are included within the function. Do not include any explanations, markdown formatting, or extra code outside of this function.
 In the suggested improvements, you may either:
-    - Adjust the architecture of the neural network (e.g., add more layers, change activation functions).
-    - Adjust the hyperparameters of the current neural network, such as the number of hidden units or learning rate.
+    - Adjust the architecture of the neural network (e.g., add more layers, change activation functions). You may use some that are not included in the examples.
+    - Modify the hyperparameters of the current neural network, such as the number of hidden units or learning rate.
     - Suggest custom loss functions or regularization techniques to improve the regression performance.
     - Optimize the model using advanced techniques like batch normalization, dropout, or L2 regularization.
 
-**Example 1** (Strong Metrics, Small Hyperparameter Tuning):
+**Example 1** (Strong Metrics, Small Hyperparameter Change):
 Previous Model:
 def load_model(X_train, y_train):
     import torch.nn as nn
