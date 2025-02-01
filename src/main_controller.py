@@ -117,27 +117,66 @@ class MainController:
     #         logging.error(f"Failed to load data from {self.joblib_file_path}: {e}")
     #         return None
     
-    def _load_data(self):
-        """
-        Load the training and test data using the DataLoader.
+    # def _load_data(self):
+    #     """
+    #     Load the training and test data using the DataLoader.
     
-        Returns:
-            dict: A dictionary containing X_train, y_train, X_test, and y_test.
-        """
-        try:
-            data = DataLoader.load_data(self.joblib_file_path)  # Handle both file and directory inputs
-            logging.info(f"Data loaded successfully from {self.joblib_file_path}")           
+    #     Returns:
+    #         dict: A dictionary containing X_train, y_train, X_test, and y_test.
+    #     """
+    #     try:
+    #         data = DataLoader.load_data(self.joblib_file_path)  # Handle both file and directory inputs
+    #         logging.info(f"Data loaded successfully from {self.joblib_file_path}")           
                       
             
-            # Choose between regression and classification, also handle image data
-            if self.is_regression is None:
-                self.is_regression = is_regression(data['y_train'])
-            if self.is_image is None:
-                self.is_image = is_image(data['X_train'])
+    #         # Choose between regression and classification, also handle image data
+    #         if self.is_regression is None:
+    #             self.is_regression = is_regression(data['y_train'])
+    #         if self.is_image is None:
+    #             self.is_image = is_image(data['X_train'])
                 
-            # Choose between regression and classification, also handle image data
+    #         # Choose between regression and classification, also handle image data
+    #         if self.is_regression:
+    #             if is_image:
+    #                 self.dynamic_updater = DynamicImageRegressionModelUpdater()
+    #             else:
+    #                 self.dynamic_updater = DynamicRegressionModelUpdater()
+    #         else:
+    #             if self.is_image:
+    #                 self.dynamic_updater = DynamicImageModelUpdater()
+    #             else:
+    #                 self.dynamic_updater = DynamicModelUpdater()
+                
+    #         return data
+    #     except Exception as e:
+    #         logging.error(f"Failed to load data from {self.joblib_file_path}: {e}")
+    #         return None
+    
+    def _load_data(self):
+        try:
+            data = DataLoader.load_data(self.joblib_file_path)
+            logging.info(f"Data loaded successfully from {self.joblib_file_path}")
+            
+            # Extract the pre-split flag; if missing, assume data is pre-split.
+            self.is_pre_split = data.pop('is_pre_split', True)
+            
+            # Determine if the task is regression based on the appropriate target key.
+            if self.is_regression is None:
+                if self.is_pre_split:
+                    self.is_regression = is_regression(data['y_train'])
+                else:
+                    self.is_regression = is_regression(data['y'])
+                    
+            # Similarly, set is_image using the proper key.
+            if self.is_image is None:
+                if self.is_pre_split:
+                    self.is_image = is_image(data['X_train'])
+                else:
+                    self.is_image = is_image(data['X'])
+                    
+            # (Optional) Reinitialize dynamic_updater based on the flags.
             if self.is_regression:
-                if is_image:
+                if self.is_image:
                     self.dynamic_updater = DynamicImageRegressionModelUpdater()
                 else:
                     self.dynamic_updater = DynamicRegressionModelUpdater()
@@ -146,11 +185,12 @@ class MainController:
                     self.dynamic_updater = DynamicImageModelUpdater()
                 else:
                     self.dynamic_updater = DynamicModelUpdater()
-                
+                    
             return data
         except Exception as e:
             logging.error(f"Failed to load data from {self.joblib_file_path}: {e}")
             return None
+
 
     def run(self, iterations=5, max_retries=1):
         """
@@ -170,14 +210,37 @@ class MainController:
             for iteration in range(iterations):
                 print(f"\n=== Iteration {iteration + 1} ===")
     
-                # Decide on metrics source: validation or test
+                # # Decide on metrics source: validation or test
+                # if self.metrics_source == "validation":
+                #     X_train, X_val, y_train, y_val = train_test_split(
+                #         self.data['X_train'], self.data['y_train'], test_size=0.2, random_state=42
+                #     )
+                # else:
+                #     X_train, y_train = self.data['X_train'], self.data['y_train']
+                #     X_val, y_val = self.data['X_test'], self.data['y_test']
+                
                 if self.metrics_source == "validation":
-                    X_train, X_val, y_train, y_val = train_test_split(
-                        self.data['X_train'], self.data['y_train'], test_size=0.2, random_state=42
-                    )
-                else:
-                    X_train, y_train = self.data['X_train'], self.data['y_train']
-                    X_val, y_val = self.data['X_test'], self.data['y_test']
+                    if self.is_pre_split:
+                        # Pre-split data: further split the provided training set.
+                        X_train, X_val, y_train, y_val = train_test_split(
+                            self.data['X_train'], self.data['y_train'], test_size=0.2, random_state=42
+                        )
+                    else:
+                        # Unsplit data: perform one split now to create training and validation sets.
+                        X_train, X_val, y_train, y_val = train_test_split(
+                            self.data['X'], self.data['y'], test_size=0.2, random_state=42
+                        )
+                else:  # metrics_source == "test"
+                    if self.is_pre_split:
+                        X_train, y_train = self.data['X_train'], self.data['y_train']
+                        X_val, y_val = self.data['X_test'], self.data['y_test']
+                    else:
+                        # If unsplit data is provided but metrics_source is "test", override to validation.
+                        logging.warning("Unsplit data provided; overriding metrics_source to 'validation'.")
+                        X_train, X_val, y_train, y_val = train_test_split(
+                            self.data['X'], self.data['y'], test_size=0.2, random_state=42
+                        )
+
     
                 retries = 0
                 model = None

@@ -85,24 +85,6 @@ class NNLLMImprover:
         else:
             return obj
 
-    # def _format_prompt(self, current_model_code, metrics, extra_info):
-    #     """
-    #     Format the prompt with the current model and metrics.
-    #     Converts all values in the metrics dictionary to Python-native types to avoid serialization issues.
-    #     """
-    #     with open(self.prompt_file_path, 'r') as file:
-    #         prompt_template = file.read()
-    
-    #     # # Convert metrics to Python-native types
-    #     # metrics = {key: float(value) if isinstance(value, (np.float32, np.float64, torch.Tensor)) else value 
-    #     #            for key, value in metrics.items()}
-    
-    #     history_str = json.dumps(self.model_history, indent=2)
-    #     metrics_str = json.dumps(metrics, indent=2)
-        
-    #     return prompt_template.format(current_model_code=current_model_code, metrics_str=metrics_str, history_str=history_str, extra_info=extra_info)
-
-
 class NNRegressionLLMImprover(NNLLMImprover):
     def __init__(self, llm_model, model_history=None, prompt_file_path=prompt_regression_file_path):
         super().__init__(llm_model, model_history, prompt_file_path)
