@@ -590,12 +590,6 @@ class NNRegressionModelTrainer:
             y_train = np.array(y_train)
             y_test = np.array(y_test)
 
-        # Debug: Check for NaNs in the NumPy arrays.
-        print("Checking NaNs in input data (NumPy):")
-        print(f"NaN count in X_train: {np.isnan(X_train).sum()}")
-        print(f"NaN count in y_train: {np.isnan(y_train).sum()}")
-        print(f"NaN count in X_test: {np.isnan(X_test).sum()}")
-        print(f"NaN count in y_test: {np.isnan(y_test).sum()}")
 
         # Split the training data into training and validation sets.
         X_train_np, X_val_np, y_train_np, y_val_np = train_test_split(
@@ -609,13 +603,6 @@ class NNRegressionModelTrainer:
         self.y_val = torch.tensor(y_val_np, dtype=torch.float32).view(-1, 1).to(self.device)
         self.X_test = torch.tensor(X_test, dtype=torch.float32).to(self.device)
         self.y_test = torch.tensor(y_test, dtype=torch.float32).view(-1, 1).to(self.device)
-
-        # Debug: Check for NaNs in the converted tensors.
-        print("Checking NaNs in input data (Tensors):")
-        print(f"NaN count in X_train: {torch.isnan(self.X_train).sum().item()}")
-        print(f"NaN count in y_train: {torch.isnan(self.y_train).sum().item()}")
-        print(f"NaN count in X_test: {torch.isnan(self.X_test).sum().item()}")
-        print(f"NaN count in y_test: {torch.isnan(self.y_test).sum().item()}")
 
         self.batch_size = batch_size
         self.model = self.model.to(self.device)

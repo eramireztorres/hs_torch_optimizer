@@ -1,24 +1,37 @@
-You are provided with the following Python model that implements a convolutional neural network (CNN) for image classification using PyTorch:
+You are provided with the following Python model that implements a neural network for image classification using PyTorch:
 
 {current_model_code}
 
-Classification metrics for this model are:
+Classification metrics for this model:
 {metrics_str}
 
-Previous models and their performance metrics are:
+Previous models and their performance metrics:
 {history_str}
 
 Additional Information:
 {extra_info}
 
-Task:
-Based on the given image classification torch model and its performance, suggest improvements. Your response must only include a single Python function named load_model that defines the model and returns it. Ensure all necessary imports are included within the function. Do not include any explanations, markdown formatting, or extra code outside of this function.
-In the suggested improvements, you may either:
-    - Adjust the architecture (e.g., add more layers, change the kernel size, modify activation functions). You may use some that are not included in the examples.
-    - Modify the hyperparameters, such as the number of filters or learning rate.
-    - Propose techniques to improve model generalization, such as data augmentation or regularization methods.
-    - Propose some other advanced neural network architecture that improves image classification other than CNN.
-    - Introduce advanced techniques like batch normalization, dropout, or residual connections.
+**Important**:
+- Return exactly one function named `load_model` that defines and returns the improved model (or a tuple if needed).
+- Include all required imports in the function. Provide no other text or explanations.
+- Possible improvements:
+  1. Change or deepen the architecture (CNN with extra layers, residual blocks, Vision Transformer, or some ensemble).
+  2. Modify hyperparameters (filter sizes, # of layers, learning rate, etc.).
+  3. Add data augmentation, dropout, batch norm, or other regularization.
+  4. If small adjustments fail after ~2–3 tries, propose a more significant change or a different architecture.
+- Avoid repeating small tweaks that do not improve upon the best historical metrics.
+
+**Task**:
+Suggest an improved image classifier, potentially addressing issues like class imbalance, overfitting, or poor minority-class performance. Return only a single `load_model` function with all imports, no extra text.
+
+**Output**:
+Provide **only** the Python code for the improved `load_model` function.
+
+---
+
+### **Examples**
+
+Below are shortened examples demonstrating different improvements. Each returns exactly one `load_model` function, no extra text.
 
 
 **Example 1** (Strong Metrics, Small Adjustment in Filters):
@@ -398,10 +411,175 @@ def load_model(X_train, y_train):
     num_classes = len(set(y_train))
     return ImprovedCNN(num_channels, img_height, img_width, num_classes)
 
+**Example 6** (Data Augmentation + BatchNorm):
+Previous Model:
+def load_model(X_train, y_train):
+    import torch
+    import torch.nn as nn
+    import torch.nn.functional as F
+
+    class BaselineCNN(nn.Module):
+        def __init__(self, in_channels, img_height, img_width, num_classes=10):
+            super(BaselineCNN, self).__init__()
+            self.conv1 = nn.Conv2d(in_channels, 32, kernel_size=3, stride=1, padding=1)
+            self.conv2 = nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1)
+            self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
+            self.fc1 = nn.Linear(64 * (img_height // 4) * (img_width // 4), 128)
+            self.fc2 = nn.Linear(128, num_classes)
+
+        def forward(self, x):
+            x = self.pool(F.relu(self.conv1(x)))
+            x = self.pool(F.relu(self.conv2(x)))
+            x = x.view(x.size(0), -1)
+            x = F.relu(self.fc1(x))
+            x = self.fc2(x)
+            return x
+
+    in_channels = X_train.shape[1]
+    img_height = X_train.shape[2]
+    img_width = X_train.shape[3]
+    num_classes = len(set(y_train))
+    return BaselineCNN(in_channels, img_height, img_width, num_classes)
+
+
+Global:
+    Accuracy: 0.86
+    Precision: 0.85
+    Recall: 0.84
+    F1 Score: 0.84
+
+Per-Class:
+    Precision per class: [0.88, 0.82]
+    Recall per class: [0.86, 0.80]
+    F1 Score per class: [0.87, 0.81]
+
+
+Extra Info:
+The training set is fairly small (only a few thousand images), leading to noticeable overfitting.
+Images come from various lighting conditions and angles, so data augmentation could help capture these variations.
+Preliminary experiments show unstable training dynamics, suggesting that batch normalization may improve convergence and reduce sensitivity to hyperparameter choices.
+
+Suggested Improvement:
+def load_model(X_train, y_train):
+    import torch
+    import torch.nn as nn
+    import torch.nn.functional as F
+    from torchvision import transforms
+
+    class AugmentCNN(nn.Module):
+        def __init__(self, in_channels, img_height, img_width, num_classes):
+            super(AugmentCNN, self).__init__()
+            self.transform = transforms.Compose([
+                transforms.RandomHorizontalFlip(),
+                transforms.RandomRotation(15)
+            ])
+            self.conv1 = nn.Conv2d(in_channels, 32, 3, padding=1)
+            self.bn1 = nn.BatchNorm2d(32)
+            self.conv2 = nn.Conv2d(32, 64, 3, padding=1)
+            self.bn2 = nn.BatchNorm2d(64)
+            self.pool = nn.MaxPool2d(2,2)
+            self.fc1 = nn.Linear(64 * (img_height // 4) * (img_width // 4), 128)
+            self.fc2 = nn.Linear(128, num_classes)
+        def forward(self, x):
+            x = self.transform(x)
+            x = self.pool(F.relu(self.bn1(self.conv1(x))))
+            x = self.pool(F.relu(self.bn2(self.conv2(x))))
+            x = x.view(x.size(0), -1)
+            x = F.relu(self.fc1(x))
+            x = self.fc2(x)
+            return x
+
+    in_channels = X_train.shape[1]
+    img_height = X_train.shape[2]
+    img_width = X_train.shape[3]
+    num_classes = len(set(y_train))
+    return AugmentCNN(in_channels, img_height, img_width, num_classes)
+
+**Example 7** (Vision Transformer):
+Previous Model:
+def load_model(X_train, y_train):
+    import torch
+    import torch.nn as nn
+    import torch.nn.functional as F
+
+    class BaselineCNN(nn.Module):
+        def __init__(self, in_channels, img_height, img_width, num_classes=10):
+            super(BaselineCNN, self).__init__()
+            self.conv1 = nn.Conv2d(in_channels, 32, kernel_size=3, padding=1)
+            self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
+            self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
+            self.fc1 = nn.Linear(64 * (img_height // 4) * (img_width // 4), 128)
+            self.fc2 = nn.Linear(128, num_classes)
+
+        def forward(self, x):
+            x = self.pool(F.relu(self.conv1(x)))
+            x = self.pool(F.relu(self.conv2(x)))
+            x = x.view(x.size(0), -1)
+            x = F.relu(self.fc1(x))
+            x = self.fc2(x)
+            return x
+
+    in_channels = X_train.shape[1]
+    img_height = X_train.shape[2]
+    img_width = X_train.shape[3]
+    num_classes = len(set(y_train))
+    return BaselineCNN(in_channels, img_height, img_width, num_classes)
+
+Global:
+    Accuracy: 0.88
+    Precision: 0.87
+    Recall: 0.86
+    F1 Score: 0.86
+
+Per-Class:
+    Precision per class: [0.90, 0.84]
+    Recall per class: [0.88, 0.83]
+    F1 Score per class: [0.89, 0.83]
+
+
+Extra Info:
+The images are relatively large and contain complex global features that might not be fully captured by localized CNN filters (e.g., wide-scale patterns, distant dependencies).
+The dataset includes ~50k images, making it large enough for a Transformer-based approach.
+Preliminary trials with deeper CNNs improved results slightly but plateaued, suggesting a fundamentally different architecture (Vision Transformer) could uncover more global context and potentially surpass CNN performance.
+
+Suggested Improvement:
+def load_model(X_train, y_train):
+    import torch
+    import torch.nn as nn
+    from torchvision import transforms
+
+    # Minimal Vision Transformer Example
+    class SimpleVisionTransformer(nn.Module):
+        def __init__(self, in_channels, img_size, patch_size, num_classes, embed_dim=128, nhead=4, num_layers=2):
+            super().__init__()
+            # Flatten image into patches
+            self.patch_embed = nn.Conv2d(in_channels, embed_dim, kernel_size=patch_size, stride=patch_size)
+            encoder_layer = nn.TransformerEncoderLayer(d_model=embed_dim, nhead=nhead)
+            self.transformer = nn.TransformerEncoder(encoder_layer, num_layers=num_layers)
+            self.classifier = nn.Linear(embed_dim, num_classes)
+
+        def forward(self, x):
+            # x: (B, C, H, W)
+            patches = self.patch_embed(x)  # -> (B, embed_dim, H/patch_size, W/patch_size)
+            B, E, Hp, Wp = patches.shape
+            patches = patches.reshape(B, E, Hp*Wp).permute(2, 0, 1)  # (Hp*Wp, B, E)
+            y = self.transformer(patches)  # (Hp*Wp, B, E)
+            y = y.mean(dim=0)  # (B, E)
+            return self.classifier(y)
+
+    in_channels = X_train.shape[1]
+    img_height = X_train.shape[2]
+    img_width = X_train.shape[3]
+    num_classes = len(set(y_train))
+    patch_size = 4  # Example
+    return SimpleVisionTransformer(in_channels, (img_height, img_width), patch_size, num_classes)
+
+
 
 Please ensure all necessary imports are included within the function.
 Provide only executable Python code for the improved model without any comments, explanations, or markdown formatting.
 
 Output:
 Provide only the improved Python code that can replace the current model.
+Suggested Improvement:
 

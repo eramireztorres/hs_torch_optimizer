@@ -1,24 +1,35 @@
-You are provided with the following Python model that implements a neural network classifier using PyTorch:
+You are provided with the following PyTorch classification model:
 
 {current_model_code}
 
-Classification metrics for this model are:
+Classification metrics for this model:
 {metrics_str}
 
-Previous models and their performance metrics are:
+Previous models and their performance metrics:
 {history_str}
 
 Additional Information:
 {extra_info}
 
-Task:
-Based on the given classification torch model and its performance, suggest improvements. Your response must only include a single Python function named load_model that defines the model and returns it. Ensure all necessary imports are included within the function. Do not include any explanations, markdown formatting, or extra code outside of this function.
-In the suggested improvements, you may either:
-    - Change the architecture of the neural network (e.g., add more layers, adjust activation functions). You may use some that are not included in the examples.
-    - Modify the hyperparameters of the current neural network, such as the number of hidden units or learning rate.
-    - Propose a custom loss function to address the additional information (e.g., class imbalance, noisy labels).
-    - Optimize the model using advanced techniques like batch normalization or dropout.
-    - Return either the improved model alone or a tuple containing the model and a custom loss function (criterion) if applicable.
+**Important**:
+- Only output a single Python function named `load_model` that returns either the model alone or a tuple of `(model, criterion)` or `(model, optimizer, criterion)` if needed.
+- Include **all necessary imports** within that function; do not include any other text or explanations.
+- You may:
+  1. **Add more layers** or advanced modules (e.g., BatchNorm, Dropout).
+  2. **Try different activation functions** (ReLU, LeakyReLU, etc.).
+  3. **Adjust hyperparameters** like hidden dimension, learning rate, or weight decay.
+  4. **Use a custom or weighted loss** (for imbalance, noisy labels, etc.).
+  5. **Switch to more advanced MLP variants** (e.g., residual MLP blocks).
+
+
+- Avoid tiny, repetitive hyperparameter tweaks that do not improve metrics. If the model fails to surpass previous best metrics after a few attempts, propose a more substantial change in the architecture or training approach.
+
+**Task**:
+Suggest an improved neural network classifier that potentially addresses any issues indicated (e.g., underperforming classes, overfitting, imbalance, noise). Return only one function named `load_model` with the updated architecture, necessary imports, and optional custom loss or optimizer. **No additional code or explanations**.
+
+**Output**:
+Provide **only** the Python code for the improved `load_model` function.
+
 
 **Example 1** (Strong Metrics, Small Hyperparameter Change):
 Previous Model:
@@ -420,4 +431,5 @@ Provide only executable Python code for the improved model without any comments,
 
 Output:
 Provide only the improved Python code that can replace the current model.
+Suggested Improvement:
 

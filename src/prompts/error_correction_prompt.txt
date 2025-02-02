@@ -4,7 +4,7 @@ Return ONLY the corrected code with proper indentation.
 Do not add explanations or comments.
 
 Requirements:
-1. The code must define and return a model (e.g., XGBRegressor, RandomForestClassifier, etc.).
+1. The code must define and return a model (e.g., XGBRegressor, RandomForestClassifier, etc.). You may not change the model type: if it is classification, the correction must be classification; if it is regression, the correction must be regression.
 2. All necessary imports must be inside the `load_model()` function.
 3. No extra code or imports are allowed outside the `load_model()` function.
 
