@@ -8,7 +8,7 @@ This project aims to optimize neural network models using PyTorch by iterating t
 - Utilizes LLM to suggest improvements in model architecture and hyperparameters.
 - Dynamically applies improvements using hot-swapping techniques.
 - Saves model history and evaluation metrics.
-  
+
 ## Installation
 
 1. **Clone the repository:**
@@ -41,7 +41,7 @@ Linux or macOS:
 export OPENAI_API_KEY='your_openai_api_key_here'
 ```
 
-Or in windows:
+Or in Windows:
 
 ```bash
 setx OPENAI_API_KEY "your_openai_api_key_here"
@@ -49,7 +49,7 @@ setx OPENAI_API_KEY "your_openai_api_key_here"
 
 ### Other Models via OpenRouter
 
-To use Llama, Gemini or other models with OpenRouter, follow these steps:
+To use Llama, Gemini, or other models with OpenRouter, follow these steps:
 
 1. Visit [OpenRouter](https://openrouter.ai/) and log in or create an account.
 2. Navigate to the API keys section in your account dashboard and generate a new API key.
@@ -62,6 +62,44 @@ To use Llama, Gemini or other models with OpenRouter, follow these steps:
      ```bash
      setx OPENROUTER_API_KEY "your_openrouter_api_key_here"
      ```
+
+## Web User Interface (UI)
+
+You can interact with the optimizer through a user-friendly web interface built using Streamlit.
+
+### Launching the Web UI
+
+Run the following command to start the web app:
+
+```bash
+cd web_ui
+streamlit run app.py
+```
+
+This will launch the application in your default web browser.
+
+### Configuring API Keys in the Web UI
+
+1. Open the sidebar by clicking the 🌟 icon (or swipe from the left on mobile).
+2. Enter your **OpenAI API Key** and/or **OpenRouter API Key** in the corresponding fields.
+3. Click **"Save API Keys"** to store them for future sessions.
+
+### Using the Web UI
+
+1. **Upload Data Files:**
+   - Drag and drop `.joblib` or `.csv` files into the file uploader, or enter a directory path containing your data.
+   - The app supports pre-split and unsplit datasets, both for classification and regression tasks.
+
+2. **Configure Optimization Parameters:**
+   - Enter model details such as the LLM model name, number of iterations, epochs, batch size, and learning rate.
+   - Additional fields allow you to specify whether it's a regression task, select metric sources, and provide extra information for the LLM.
+
+3. **Run Optimization:**
+   - Click **"Run Optimization"** to start the process.
+   - Real-time outputs and logs will appear on the right-hand side of the interface.
+
+4. **Review Results:**
+   - Once the optimization is complete, a success message will display the location of the saved model history and trained models.
 
 ## Run the App as CLI with Options
 
