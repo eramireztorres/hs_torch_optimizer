@@ -26,7 +26,8 @@ setup(
         'matplotlib==3.9.2',           # For plotting (optional, if visualizations are needed)
         'tqdm==4.66.5',                  # For progress bars during training
         'requests==2.32.3',
-        'httpx==0.27.2'
+        'httpx==0.27.2',
+        'streamlit==1.41.1'
     ],
     entry_points={
         'console_scripts': [
