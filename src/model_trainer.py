@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -72,6 +73,17 @@ class NNModelTrainer:
         if X_train.ndim == 3:  # shape: (num_samples, height, width)
             X_train = np.expand_dims(X_train, axis=1)
             X_test = np.expand_dims(X_test, axis=1)
+            
+        # Ensure data is a NumPy array if it is a DataFrame
+        if isinstance(X_train, pd.DataFrame):
+            X_train = X_train.values
+        if isinstance(X_test, pd.DataFrame):
+            X_test = X_test.values
+        if isinstance(y_train, pd.Series):
+            y_train = y_train.values
+        if isinstance(y_test, pd.Series):
+            y_test = y_test.values
+
 
         # Split the training data into training and validation sets.
         self.X_train, self.X_val, self.y_train, self.y_val = train_test_split(
@@ -555,6 +567,20 @@ class NNRegressionModelTrainer:
         device: Optional[Union[str, torch.device]] = None,
         patience: int = 5
     ):
+        
+        
+        # Ensure data is a NumPy array if it is a DataFrame
+        if isinstance(X_train, pd.DataFrame):
+            X_train = X_train.values
+        if isinstance(X_test, pd.DataFrame):
+            X_test = X_test.values
+        if isinstance(y_train, pd.Series):
+            y_train = y_train.values
+        if isinstance(y_test, pd.Series):
+            y_test = y_test.values
+        
+        
+        
         # Unpack the model if provided as a tuple.
         if isinstance(model, tuple):
             if len(model) == 1:

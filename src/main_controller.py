@@ -1,5 +1,6 @@
 import logging
 import numpy as np
+import pandas as pd
 import re
 import os
 import sys
@@ -250,23 +251,18 @@ class MainController:
                     
                     if model is not None:
                         break
-                    
-                    print(f'self.error_corrector: {self.error_corrector}')
                         
                     if self.error_corrector:
                         # Get current faulty code
                         current_code = self._get_dynamic_model_code()
                         
                         
-                        print("\n=== CURRENT Code before ERROR correction ===")
-                        print(current_code)
-                        
                         # Get error correction
                         improved_code = self.error_corrector.get_error_fix(
                             current_code, error_msg
                         )
                         
-                        print("\n=== CURRENT Code after ERROR correction ===")
+                        print("\n=== CODE after ERROR correction ===")
                         print(improved_code)
                         
                     else:
@@ -277,28 +273,17 @@ class MainController:
                             last_valid_model_code, {}, self.extra_info
                         )
                         
-                        print("\n=== CURRENT Code after retry ===")
-                        print(improved_code)
                         
                     
                     # Log the response from the LLM
-                    if improved_code:
-                        print("\n=== LLM Suggested Code ===")
-                        print(improved_code)  # Display the suggested code in the console
-                        logging.info(f"LLM suggested code:\n{improved_code}")
-    
-                        # Clean and update the dynamic model code
-                        # improved_code = re.sub(r'^```.*\n', '', improved_code).strip().strip('```').strip()
-                        # improved_code = re.sub(r'^python\n', '', improved_code).strip()
-                        
+                    if improved_code:                       
                         
                         cleaner = LLMCodeCleaner()
                         improved_code = cleaner.clean_code(improved_code)
                         self.dynamic_updater.update_model_code(improved_code)
                         
-                        print("\n=== CLEANED Code ===")
-                        print(improved_code)  # Display the suggested code in the console
-                        logging.info(f"CLEANED code:\n{improved_code}")
+                        # print(f"\n=== IMPROVED MODEL ITERATION {iteration + 1} ===")
+                        # print(improved_code)  # Display the suggested code in the console
                         
                         model, error_msg = self.dynamic_updater.run_dynamic_model(X_train=X_train, y_train=y_train)
                         
@@ -335,10 +320,7 @@ class MainController:
                 last_valid_model_code = current_model_code    
                 self.llm_improver.log_model_history(current_model_code, metrics)
                 
-                
-                print("\n=== CURRENT Code before improvement ===")
-                print(current_model_code)
-    
+   
                 # Get improved model code from the LLM
                 improved_code = self.llm_improver.get_model_suggestions(
                     current_model_code, metrics, extra_info=self.extra_info
@@ -346,17 +328,13 @@ class MainController:
                 
    
                 if improved_code:
-                    print("\n=== LLM Suggested Code ===")
-                    print(improved_code)  # Display the suggested code in the console
-                    logging.info(f"LLM suggested code:\n{improved_code}")
-    
-                    # improved_code = re.sub(r'^```.*\n', '', improved_code).strip().strip('```').strip()
-                    # improved_code = re.sub(r'^python\n', '', improved_code).strip()
-                    
+                 
                     
                     cleaner = LLMCodeCleaner()
                     improved_code = cleaner.clean_code(improved_code)
-                    print(f'CLEANED CODED: \n {improved_code}')
+                    
+                    print(f"\n=== IMPROVED MODEL ITERATION {iteration + 1} ===")
+                    print(improved_code)  # Display the suggested code in the console
                     
                     self.dynamic_updater.update_model_code(improved_code)
                 else:
@@ -622,26 +600,53 @@ def is_regression(y_train):
 
 
 
+
 def is_image(X_train):
     """
     Check if the input data contains 2D features (i.e., height and width dimensions).
 
     Args:
-        X_train (np.ndarray): Training data.
+        X_train (np.ndarray or pd.DataFrame): Training data.
 
     Returns:
         bool: True if the data contains 2D features (image-like), False otherwise.
     """
-    # Check if input is a NumPy array
-    if not isinstance(X_train, np.ndarray):
-        raise ValueError("Input data is not a NumPy array.")
+    # Convert Pandas DataFrame to NumPy array if necessary
+    if isinstance(X_train, pd.DataFrame):
+        X_train = X_train.to_numpy()
+    elif not isinstance(X_train, np.ndarray):
+        raise ValueError("Input data must be a NumPy array or a Pandas DataFrame.")
 
-    # Check if the data has at least 3 dimensions (batch_size, height, width or channels, height, width)
+    # Check if the data has at least 3 dimensions (batch_size, height, width)
     if len(X_train.shape) >= 3:
         height, width = X_train.shape[-2], X_train.shape[-1]
-        # Validate that height and width are greater than 1 (indicating 2D features)
         if height > 1 and width > 1:
             return True
 
     return False
+
+
+
+# def is_image(X_train):
+#     """
+#     Check if the input data contains 2D features (i.e., height and width dimensions).
+
+#     Args:
+#         X_train (np.ndarray): Training data.
+
+#     Returns:
+#         bool: True if the data contains 2D features (image-like), False otherwise.
+#     """
+#     # Check if input is a NumPy array
+#     if not isinstance(X_train, np.ndarray):
+#         raise ValueError("Input data is not a NumPy array.")
+
+#     # Check if the data has at least 3 dimensions (batch_size, height, width or channels, height, width)
+#     if len(X_train.shape) >= 3:
+#         height, width = X_train.shape[-2], X_train.shape[-1]
+#         # Validate that height and width are greater than 1 (indicating 2D features)
+#         if height > 1 and width > 1:
+#             return True
+
+#     return False
 
