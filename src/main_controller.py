@@ -28,6 +28,8 @@ class MainController:
         """
         Initialize the MainController.
         """
+
+        
         self.joblib_file_path = joblib_file_path
         self.history_manager = ModelHistoryManager(history_file_path=history_file_path)
         self.is_regression = is_regression
@@ -46,7 +48,7 @@ class MainController:
         self.llm_improver = self._initialize_llm_improver(model_provider, model)
 
         # Choose between regression and classification, also handle image data
-        if is_regression:
+        if self.is_regression:
             if is_image:
                 self.dynamic_updater = DynamicImageRegressionModelUpdater()
             else:
@@ -160,7 +162,7 @@ class MainController:
             
             # Extract the pre-split flag; if missing, assume data is pre-split.
             self.is_pre_split = data.pop('is_pre_split', True)
-            
+           
             # Determine if the task is regression based on the appropriate target key.
             if self.is_regression is None:
                 if self.is_pre_split:
@@ -589,6 +591,7 @@ def is_regression(y_train):
     Returns:
         bool: True if the problem is regression, False if it's classification.
     """
+    
     # If the target array contains floats but all values are actually integers
     if np.issubdtype(y_train.dtype, np.floating):
         # Check if all float values are actually integers

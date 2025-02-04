@@ -51,6 +51,8 @@ class NNModelTrainer:
         device: Optional[Union[str, torch.device]] = None,
         patience: int = 5
     ):
+        
+        
         # Unpack the model if provided as a tuple.
         if isinstance(model, tuple):
             if len(model) == 1:
@@ -58,12 +60,32 @@ class NNModelTrainer:
                 self.criterion = nn.CrossEntropyLoss()  # Default loss for classification
                 self.optimizer = optim.Adam(self.model.parameters(), lr=lr)
             elif len(model) == 2:
-                self.model, self.criterion = model
-                self.optimizer = optim.Adam(self.model.parameters(), lr=lr)
+                self.model, second_element = model
+                if isinstance(second_element, optim.Optimizer):  # If optimizer is passed
+                    self.optimizer = second_element
+                    self.criterion = nn.CrossEntropyLoss()
+                else:  # Assume second_element is criterion
+                    self.criterion = second_element
+                    self.optimizer = optim.Adam(self.model.parameters(), lr=lr)
             elif len(model) == 3:
                 self.model, self.optimizer, self.criterion = model
             else:
                 raise ValueError("Invalid model tuple length. Expected 1, 2, or 3 elements.")
+
+        # # Unpack the model if provided as a tuple.
+        # if isinstance(model, tuple):
+        #     if len(model) == 1:
+        #         self.model = model[0]
+        #         self.criterion = nn.CrossEntropyLoss()  # Default loss for classification
+        #         self.optimizer = optim.Adam(self.model.parameters(), lr=lr)
+        #     elif len(model) == 2:
+        #         self.model, self.criterion = model
+        #         self.optimizer = optim.Adam(self.model.parameters(), lr=lr)
+        #     elif len(model) == 3:
+        #         self.model, self.optimizer, self.criterion = model
+        #     else:
+        #         raise ValueError("Invalid model tuple length. Expected 1, 2, or 3 elements.")
+
         else:
             self.model = model
             self.criterion = nn.CrossEntropyLoss()  # Default loss for classification
@@ -585,15 +607,23 @@ class NNRegressionModelTrainer:
         if isinstance(model, tuple):
             if len(model) == 1:
                 self.model = model[0]
-                self.criterion = nn.MSELoss()  # Default loss for regression
+                self.criterion = nn.MSELoss()
                 self.optimizer = optim.Adam(self.model.parameters(), lr=lr)
             elif len(model) == 2:
-                self.model, self.criterion = model
-                self.optimizer = optim.Adam(self.model.parameters(), lr=lr)
+                self.model, second_element = model
+                if isinstance(second_element, nn.Module):  # If the second element is another model (unlikely)
+                    raise ValueError("Unexpected model structure.")
+                elif isinstance(second_element, optim.Optimizer):  # If optimizer is passed
+                    self.optimizer = second_element
+                    self.criterion = nn.MSELoss()
+                else:  # Assume second_element is criterion
+                    self.criterion = second_element
+                    self.optimizer = optim.Adam(self.model.parameters(), lr=lr)
             elif len(model) == 3:
                 self.model, self.optimizer, self.criterion = model
             else:
                 raise ValueError("Invalid model tuple length. Expected 1, 2, or 3 elements.")
+                
         else:
             self.model = model
             self.criterion = nn.MSELoss()  # Default loss for regression
@@ -624,11 +654,21 @@ class NNRegressionModelTrainer:
 
         # Convert the NumPy arrays to PyTorch tensors and move them to the selected device.
         self.X_train = torch.tensor(X_train_np, dtype=torch.float32).to(self.device)
-        self.X_val = torch.tensor(X_val_np, dtype=torch.float32).to(self.device)
-        self.y_train = torch.tensor(y_train_np, dtype=torch.float32).view(-1, 1).to(self.device)
-        self.y_val = torch.tensor(y_val_np, dtype=torch.float32).view(-1, 1).to(self.device)
-        self.X_test = torch.tensor(X_test, dtype=torch.float32).to(self.device)
-        self.y_test = torch.tensor(y_test, dtype=torch.float32).view(-1, 1).to(self.device)
+        self.X_val = torch.tensor(X_val_np, dtype=torch.float32).to(self.device)        
+        self.X_test = torch.tensor(X_test, dtype=torch.float32).to(self.device)       
+        
+        
+        # self.y_train = torch.tensor(y_train_np, dtype=torch.float32).view(-1, 1).to(self.device)
+        # self.y_val = torch.tensor(y_val_np, dtype=torch.float32).view(-1, 1).to(self.device)
+        # self.y_test = torch.tensor(y_test, dtype=torch.float32).view(-1, 1).to(self.device)
+        
+        self.y_train = torch.tensor(y_train_np, dtype=torch.float32).to(self.device)
+        self.y_val = torch.tensor(y_val_np, dtype=torch.float32).to(self.device)
+        self.y_test = torch.tensor(y_test, dtype=torch.float32).to(self.device)
+
+        
+
+
 
         self.batch_size = batch_size
         self.model = self.model.to(self.device)
@@ -657,7 +697,8 @@ class NNRegressionModelTrainer:
 
         Args:
             epochs (int): Maximum number of epochs to train.
-        """
+        """  
+        
         dataset = torch.utils.data.TensorDataset(self.X_train, self.y_train)
         dataloader = torch.utils.data.DataLoader(dataset, batch_size=self.batch_size, shuffle=True)
 

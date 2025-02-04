@@ -83,7 +83,7 @@ def select_model_cli(data,
     print(f"Using model: {model} (provider: {model_provider})")
     print(f"Metrics source: {metrics_source}")
     
-    if is_regression is None:
+    if is_regression is not None:
         is_regression = is_regression == 'true'
 
     controller = MainController(data, model_provider, history_file_path, 

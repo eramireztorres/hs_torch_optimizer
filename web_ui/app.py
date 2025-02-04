@@ -107,10 +107,12 @@ def save_uploaded_files(uploaded_files):
 
     return file_paths
 
-def convert_is_regression(value):
+def convert_is_regression(value):    
     if value == "None":
         return None
-    return value.lower() == "true"
+    if value.lower() == "true":
+        return "true"
+    return "false"
 
 
 
@@ -187,11 +189,15 @@ with right_col:
             'extra_info': extra_info,
             'batch_size': batch_size,
             'lr': lr,
-            'epochs': epochs,
-            'is_regression': convert_is_regression(is_regression),
+            'epochs': epochs,            
             'metrics_source': metrics_source,
             'error_model': error_model
         }
+        
+        is_regression_value = convert_is_regression(is_regression)        
+       
+        if is_regression_value is not None:            
+            args_dict['is_regression'] = is_regression_value
 
 
         run_cli_with_output(data_path, args_dict, output_placeholder)
