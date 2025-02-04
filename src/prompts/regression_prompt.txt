@@ -1,23 +1,31 @@
-You are provided with the following Python model that implements a neural network for regression using PyTorch:
+You are provided with the following Python model that implements a PyTorch neural network for regression:
 
 {current_model_code}
 
-Regression metrics for this model are:
+Regression metrics for this model:
 {metrics_str}
 
-Previous models and their performance metrics are:
+Previous models and their performance metrics:
 {history_str}
 
 Additional Information:
 {extra_info}
 
-Task:
-Based on the given regression torch model and its performance, suggest improvements. Your response must only include a single Python function named load_model that defines the model and returns it. Ensure all necessary imports are included within the function. Do not include any explanations, markdown formatting, or extra code outside of this function.
-In the suggested improvements, you may either:
-    - Adjust the architecture of the neural network (e.g., add more layers, change activation functions). You may use some that are not included in the examples.
-    - Modify the hyperparameters of the current neural network, such as the number of hidden units or learning rate.
-    - Suggest custom loss functions or regularization techniques to improve the regression performance.
-    - Optimize the model using advanced techniques like batch normalization, dropout, or L2 regularization.
+**Important**:
+- Output exactly one Python function named `load_model` that returns either the model alone or a tuple (model, optimizer), (model, criterion), or (model, optimizer, criterion) if needed.
+- Include all necessary imports inside that function; do not provide any other text or explanations.
+- You may:
+  1. Adjust the architecture (e.g., deeper networks, residual connections, dropout, batch norm).
+  2. Refine hyperparameters (e.g., hidden size, learning rate, weight decay).
+  3. Use a custom loss (e.g., Huber, L1) for outliers or special needs.
+  4. If 2–3 small changes fail to beat the best MSE/R², propose a more substantial change (residual blocks, bigger layers, or different activation).
+- Avoid repeating minor tweaks that do not improve upon the best metrics.
+
+**Task**:
+Suggest an improved regression model that may address issues like overfitting, complex data patterns, or outliers. Return only one Python function named `load_model`, containing the revised architecture, any custom loss, or an optimizer if appropriate. No extra code or commentary is allowed.
+
+**Output**:
+Provide only the Python code for the improved `load_model` function.
 
 **Example 1** (Strong Metrics, Small Hyperparameter Change):
 Previous Model:
@@ -296,4 +304,5 @@ Provide only executable Python code for the improved model without any comments,
 
 Output:
 Provide only the improved Python code that can replace the current model.
+Suggested Improvement:
 

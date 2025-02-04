@@ -658,13 +658,18 @@ class NNRegressionModelTrainer:
         self.X_test = torch.tensor(X_test, dtype=torch.float32).to(self.device)       
         
         
-        # self.y_train = torch.tensor(y_train_np, dtype=torch.float32).view(-1, 1).to(self.device)
-        # self.y_val = torch.tensor(y_val_np, dtype=torch.float32).view(-1, 1).to(self.device)
-        # self.y_test = torch.tensor(y_test, dtype=torch.float32).view(-1, 1).to(self.device)
-        
-        self.y_train = torch.tensor(y_train_np, dtype=torch.float32).to(self.device)
-        self.y_val = torch.tensor(y_val_np, dtype=torch.float32).to(self.device)
-        self.y_test = torch.tensor(y_test, dtype=torch.float32).to(self.device)
+        # Check if it's single-output regression (target shape [batch_size]) or multi-output ([batch_size, n_outputs])
+        if y_train_np.ndim == 1 or (y_train_np.ndim == 2 and y_train_np.shape[1] == 1):
+            # For single-output regression, ensure targets have shape [batch_size, 1]
+            self.y_train = torch.tensor(y_train_np, dtype=torch.float32).view(-1, 1).to(self.device)
+            self.y_val = torch.tensor(y_val_np, dtype=torch.float32).view(-1, 1).to(self.device)
+            self.y_test = torch.tensor(y_test, dtype=torch.float32).view(-1, 1).to(self.device)
+        else:
+            # For multi-output regression, keep the original shape
+            self.y_train = torch.tensor(y_train_np, dtype=torch.float32).to(self.device)
+            self.y_val = torch.tensor(y_val_np, dtype=torch.float32).to(self.device)
+            self.y_test = torch.tensor(y_test, dtype=torch.float32).to(self.device)
+
 
         
 

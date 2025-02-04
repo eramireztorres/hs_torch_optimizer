@@ -250,17 +250,48 @@ class DataLoader:
     #     else:
     #         return super()._load_from_directory(directory_path)
     
+    
+    @staticmethod
+    def _add_channel_dimension(data):
+        """
+        Adds a channel dimension to 3D image data if it's missing.
+    
+        Args:
+            data (np.ndarray): Input image data of shape (samples, height, width).
+    
+        Returns:
+            np.ndarray: Image data with shape (samples, channels, height, width).
+        """
+        if data.ndim == 3:  # Check if data is (samples, height, width)
+            data = np.expand_dims(data, axis=1)  # Add channel dimension -> (samples, 1, height, width)
+        return data
+    
     @staticmethod
     def _handle_data_split(data):
         if 'X_train' in data and 'y_train' in data:
             data['is_pre_split'] = True
+            data['X_train'] = DataLoader._add_channel_dimension(data['X_train'])
+            data['X_test'] = DataLoader._add_channel_dimension(data['X_test'])
             return data
         elif 'X' in data and 'y' in data:
-            # Return unsplit data along with a flag indicating unsplit data.
-            return {'X': data['X'], 'y': data['y'], 'is_pre_split': False}
-
+            data['is_pre_split'] = False
+            data['X'] = DataLoader._add_channel_dimension(data['X'])
+            return data
         else:
             raise ValueError("Input data must contain either ('X_train', 'y_train', 'X_test', 'y_test') or ('X', 'y').")
+
+    
+    # @staticmethod
+    # def _handle_data_split(data):
+    #     if 'X_train' in data and 'y_train' in data:
+    #         data['is_pre_split'] = True
+    #         return data
+    #     elif 'X' in data and 'y' in data:
+    #         # Return unsplit data along with a flag indicating unsplit data.
+    #         return {'X': data['X'], 'y': data['y'], 'is_pre_split': False}
+
+    #     else:
+    #         raise ValueError("Input data must contain either ('X_train', 'y_train', 'X_test', 'y_test') or ('X', 'y').")
     
     # @staticmethod
     # def _handle_csv_file(file_path):

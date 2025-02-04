@@ -1,43 +1,44 @@
 def load_model(X_train, y_train):
-    """
-    Returns a simple convolutional neural network (CNN) for image regression.
-    Automatically infers input dimensions (image size and channels) from X_train.
-
-    Args:
-        X_train (np.ndarray or torch.Tensor): Training data to infer input dimensions.
-        y_train (np.ndarray or torch.Tensor): Training labels (not used directly here, but passed for consistency).
-    
-    Returns:
-        nn.Module: A CNN for image regression.
-    """
-    
+    import torch
     import torch.nn as nn
     import torch.nn.functional as F
-    
-    class SimpleImageRegressionNN(nn.Module):
-        def __init__(self, num_channels, img_height, img_width):
-            super(SimpleImageRegressionNN, self).__init__()
-            self.conv1 = nn.Conv2d(num_channels, 32, kernel_size=3, stride=1, padding=1)  # Use inferred channels
+
+    class FlexibleImageRegressionNN(nn.Module):
+        def __init__(self, input_shape, output_dim):
+            super(FlexibleImageRegressionNN, self).__init__()
+            num_channels, img_height, img_width = input_shape
+
+            self.conv1 = nn.Conv2d(num_channels, 32, kernel_size=3, stride=1, padding=1)
             self.conv2 = nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1)
             self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
-            
-            # Dynamically calculate the size of the flattened features after pooling
-            self.fc1 = nn.Linear(64 * (img_height // 4) * (img_width // 4), 128)  # Adjust based on image size
-            output_dim = y_train.shape[1] if len(y_train.shape) > 1 else 1
-            self.fc2 = nn.Linear(128, output_dim)  # For image regression
 
-        def forward(self, x):
+            # Dynamically compute flattened size
+            with torch.no_grad():
+                dummy_input = torch.zeros(1, num_channels, img_height, img_width)
+                dummy_output = self._forward_conv(dummy_input)
+                flattened_size = dummy_output.view(1, -1).size(1)
+
+            self.fc1 = nn.Linear(flattened_size, 128)
+            self.fc2 = nn.Linear(128, output_dim)
+
+        def _forward_conv(self, x):
             x = self.pool(F.relu(self.conv1(x)))
             x = self.pool(F.relu(self.conv2(x)))
-            x = x.view(x.size(0), -1)  # Flatten the tensor for the fully connected layer
+            return x
+
+        def forward(self, x):
+            x = self._forward_conv(x)
+            x = x.view(x.size(0), -1)
             x = F.relu(self.fc1(x))
             x = self.fc2(x)
             return x
 
-    # Infer dimensions from X_train
-    num_channels = X_train.shape[1]  # Grayscale (1) or RGB (3)
-    img_height = X_train.shape[2]  # Image height (e.g., 64)
-    img_width = X_train.shape[3]  # Image width (e.g., 64)
+    # Ensure input has 4 dimensions: (batch_size, channels, height, width)
+    if len(X_train.shape) != 4:
+        raise ValueError("Expected input with 4 dimensions (batch_size, channels, height, width)")
 
-    # Return the dynamically created regression model
-    return SimpleImageRegressionNN(num_channels, img_height, img_width)
+    input_shape = X_train.shape[1:]  # (channels, height, width)
+    output_dim = y_train.shape[1] if len(y_train.shape) > 1 else 1
+
+    return FlexibleImageRegressionNN(input_shape, output_dim)
+
