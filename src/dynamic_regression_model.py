@@ -25,8 +25,10 @@ def load_model(X_train, y_train):
             
             self.dropout = nn.Dropout(0.2)  # Prevent overfitting
             
-            self.fc3 = nn.Linear(hidden_dim, 1)  # Output a single value
-
+            
+            output_dim = y_train.shape[1] if len(y_train.shape) > 1 else 1
+            
+            self.fc3 = nn.Linear(hidden_dim, output_dim)  
         def forward(self, x):
             x = self.fc1(x)
             x = self.norm1(x)

@@ -23,7 +23,8 @@ def load_model(X_train, y_train):
             
             # Dynamically calculate the size of the flattened features after pooling
             self.fc1 = nn.Linear(64 * (img_height // 4) * (img_width // 4), 128)  # Adjust based on image size
-            self.fc2 = nn.Linear(128, 1)  # Single output for regression
+            output_dim = y_train.shape[1] if len(y_train.shape) > 1 else 1
+            self.fc2 = nn.Linear(128, output_dim)  # For image regression
 
         def forward(self, x):
             x = self.pool(F.relu(self.conv1(x)))
