@@ -28,8 +28,6 @@ class MainController:
         """
         Initialize the MainController.
         """
-        
-        print(f'IS IMAGE IN MAIN CONTROLLER INIT?: {is_image}')
 
         
         self.joblib_file_path = joblib_file_path
@@ -49,8 +47,6 @@ class MainController:
         # Dynamically initialize the LLM model
         self.llm_improver = self._initialize_llm_improver(model_provider, model)
         
-        
-        print(f'IS IMAGE BEFORE DYNAMIC UPDATER?: {self.is_image}')
         
         # Choose between regression and classification, also handle image data
         if self.is_regression:
@@ -194,9 +190,7 @@ class MainController:
                 else:
                     self.dynamic_updater = DynamicModelUpdater()
                     
-            print(f'IS IMAGE AFTER DATA LOAD?: {self.is_image}')
-            print(f'IS REGRESSION AFTER DATA LOAD?: {self.is_regression}')
-                    
+                   
             return data
         except Exception as e:
             logging.error(f"Failed to load data from {self.joblib_file_path}: {e}")
