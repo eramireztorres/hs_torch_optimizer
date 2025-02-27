@@ -14,41 +14,58 @@ def set_env_variable(key, value):
         bashrc_path = os.path.expanduser('~/.bashrc')
         with open(bashrc_path, 'a') as f:
             f.write(f'\nexport {key}="{value}"\n')
-
-
-existing_openai_key = os.getenv("OPENAI_API_KEY", "")
-existing_openrouter_key = os.getenv("OPENROUTER_API_KEY", "")
-
+            
 st.set_page_config(
     page_title="Torch Model Optimizer",
     page_icon="🔥",
     layout="wide"
 )
 
+
+# Load existing environment variables if they exist
+existing_openai_key = os.getenv("OPENAI_API_KEY", "")
+existing_openrouter_key = os.getenv("OPENROUTER_API_KEY", "")
+existing_gemini_key = os.getenv("GEMINI_API_KEY", "")  # New for Gemini
+
+
 st.sidebar.header("⚙️ API Key Settings")
 
+# Input for OpenAI API Key (pre-populated if already set)
 openai_api_key = st.sidebar.text_input(
     "Enter your OpenAI API Key:",
-    value=existing_openai_key if existing_openai_key else "",
+    value=existing_openai_key,
     type="password"
 )
 
+
+# New: Input for Gemini API Key (pre-populated if already set)
+gemini_api_key = st.sidebar.text_input(
+    "Enter your Gemini API Key:",
+    value=existing_gemini_key,
+    type="password"
+)
+
+
+# Input for OpenRouter API Key (pre-populated if already set)
 openrouter_api_key = st.sidebar.text_input(
     "Enter your OpenRouter API Key:",
-    value=existing_openrouter_key if existing_openrouter_key else "",
+    value=existing_openrouter_key,
     type="password"
 )
 
+
+# Button to save API keys
 if st.sidebar.button("Save API Keys"):
     if openai_api_key:
         set_env_variable("OPENAI_API_KEY", openai_api_key)
         st.sidebar.success("OpenAI API Key saved successfully!")
-
     if openrouter_api_key:
         set_env_variable("OPENROUTER_API_KEY", openrouter_api_key)
         st.sidebar.success("OpenRouter API Key saved successfully!")
-
-    if not openai_api_key and not openrouter_api_key:
+    if gemini_api_key:
+        set_env_variable("GEMINI_API_KEY", gemini_api_key)
+        st.sidebar.success("Gemini API Key saved successfully!")
+    if not (openai_api_key or openrouter_api_key or gemini_api_key):
         st.sidebar.warning("Please enter at least one API key to save.")
 
 
@@ -143,7 +160,6 @@ with left_col:
     st.header("⚙️ Configure Optimization Parameters")
 
     model = st.text_input("Model:", value='gpt-4o-mini')
-    model_provider = st.text_input("Model Provider (Optional):", value='openai')
     history_file_path = st.text_input("History Model/Metrics File Path:", value='model_history.joblib')
     iterations = st.number_input("Number of Iterations:", min_value=1, max_value=100, value=10)
     extra_info = st.text_area("Extra Info for the LLM:", value='Not available')
@@ -183,7 +199,6 @@ with right_col:
 
         args_dict = {
             'model': model,
-            'model_provider': model_provider,
             'history_file_path': history_file_path,
             'iterations': iterations,
             'extra_info': extra_info,

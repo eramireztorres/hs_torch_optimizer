@@ -19,15 +19,16 @@ setup(
         'torchvision==0.19.1',          # For image datasets and transforms
         'joblib==1.4.2',               # For saving/loading models and data
         'scikit-learn==1.5.2',         # For metrics and data preprocessing
-        'openai==1.45.1',               # For LLM interaction
+        'openai==1.47.0',               # For LLM interaction
         'numpy==2.0.2',                # NumPy for array handling
         'pandas==2.2.2',               # For data manipulation
         'pytz==2024.2',                 # Timezone handling if needed
         'matplotlib==3.9.2',           # For plotting (optional, if visualizations are needed)
         'tqdm==4.66.5',                  # For progress bars during training
         'requests==2.32.3',
-        'httpx==0.27.2',
-        'streamlit==1.41.1'
+        'httpx==0.28.1',
+        'streamlit==1.41.1',
+        'google-genai==1.3.0'
     ],
     entry_points={
         'console_scripts': [
