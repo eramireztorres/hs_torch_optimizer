@@ -12,7 +12,7 @@ Additional Information:
 {extra_info}
 
 **Important**:
-- Only output a single Python function named `load_model` that returns either the model alone or a tuple of `(model, criterion)` or `(model, optimizer, criterion)` if needed.
+- Only output a single Python function named load_model that returns either the model alone or a tuple of (model, criterion), (model, optimizer, criterion), or (model, optimizer, criterion, scheduler) if needed. In the 4‑element tuple, the elements represent, respectively: the PyTorch model, the optimizer, the loss criterion, and an optional learning rate scheduler. 
 - Include **all necessary imports** within that function; do not include any other text or explanations.
 - You may:
   1. **Add more layers** or advanced modules (e.g., BatchNorm, Dropout).
@@ -388,42 +388,35 @@ Metrics for Model 2:
         F1 Score per class: [0.91, 0.84]
         
 Suggested Improvement Based on Model History:
-Analysis of Previous Models:
-    From Model 1 to Model 2, we see a consistent improvement in both global and per-class metrics, particularly in class 1, which was underperforming in Model 1. The increase in hidden units improved both global performance and per-class recall for the minority class.
-    However, there is still a performance gap between class 0 (majority class) and class 1 (minority class) in Model 2. Class 1's F1 score is still lower, indicating it might still be struggling with some aspects of the data.
-    To address this, we will increase model complexity further by adding another hidden layer, introduce dropout to prevent overfitting on the majority class, and fine-tune the learning rate to ensure the model generalizes well for both classes. Additionally, we will use weighted cross-entropy loss to help balance the class performance more effectively.
 def load_model(X_train, y_train, hidden_dim=128):
+    import torch
     import torch.nn as nn
+    import torch.nn.functional as F
+    import torch.optim as optim
     class SimpleClassificationNN(nn.Module):
         def __init__(self, input_dim, hidden_dim, output_dim):
             super(SimpleClassificationNN, self).__init__()
             self.fc1 = nn.Linear(input_dim, hidden_dim)
             self.fc2 = nn.Linear(hidden_dim, hidden_dim)
-            self.dropout = nn.Dropout(0.5)  # Dropout to prevent overfitting
+            self.dropout = nn.Dropout(0.5)
             self.relu = nn.ReLU()
             self.fc3 = nn.Linear(hidden_dim, output_dim)
         def forward(self, x):
             x = self.fc1(x)
             x = self.relu(x)
             x = self.fc2(x)
-            x = self.dropout(x)  # Apply dropout to the second layer
+            x = self.dropout(x)
             x = self.relu(x)
             x = self.fc3(x)
             return x
-
     input_dim = X_train.shape[1]
     output_dim = len(set(y_train))
     model = SimpleClassificationNN(input_dim, hidden_dim, output_dim)
-    
-    # Weighted cross-entropy to address class imbalance
-    class_weights = torch.FloatTensor([0.3, 0.7])  # Adjusted weights for class 0 and class 1
+    class_weights = torch.FloatTensor([0.3, 0.7])
     criterion = nn.CrossEntropyLoss(weight=class_weights)
-    
-    # Fine-tuning the learning rate for better generalization
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.0005, weight_decay=0.01)  # Added weight decay to prevent overfitting
-
-    return model, optimizer, criterion
-
+    optimizer = optim.Adam(model.parameters(), lr=0.0005, weight_decay=0.01)
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5, verbose=True)
+    return model, optimizer, criterion, scheduler
 
 
 Please ensure all necessary imports are included within the function.

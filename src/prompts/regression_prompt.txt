@@ -12,7 +12,7 @@ Additional Information:
 {extra_info}
 
 **Important**:
-- Output exactly one Python function named `load_model` that returns either the model alone or a tuple (model, optimizer), (model, criterion), or (model, optimizer, criterion) if needed.
+- Only output a single Python function named load_model that returns either the model alone or a tuple of (model, criterion), (model, optimizer, criterion), or (model, optimizer, criterion, scheduler) if needed. In the 4‑element tuple, the elements represent, respectively: the PyTorch model, the optimizer, the loss criterion, and an optional learning rate scheduler. 
 - Include all necessary imports inside that function; do not provide any other text or explanations.
 - You may:
   1. Adjust the architecture (e.g., deeper networks, residual connections, dropout, batch norm).
@@ -269,35 +269,33 @@ Metrics for Model 2:
     R^2 Score: 0.89
 
 Suggested Improvement Based on Model History:
-Analysis of Previous Models:
-    From Model 1 to Model 2, we observe an improvement in MSE and R^2 scores. The addition of a second hidden layer helped improve overall performance.
-    However, further performance gains could be made by addressing potential overfitting and ensuring that the model generalizes well, particularly when deeper architectures are involved. We will add dropout and batch normalization to reduce overfitting and further stabilize training. 
 def load_model(X_train, y_train):
+    import torch
     import torch.nn as nn
-    class SimpleRegressionNN(nn.Module):
+    import torch.nn.functional as F
+    import torch.optim as optim
+    class ImprovedRegressionNN(nn.Module):
         def __init__(self, input_dim, hidden_dim):
-            super(SimpleRegressionNN, self).__init__()
+            super(ImprovedRegressionNN, self).__init__()
             self.fc1 = nn.Linear(input_dim, hidden_dim)
+            self.bn1 = nn.BatchNorm1d(hidden_dim)
             self.fc2 = nn.Linear(hidden_dim, hidden_dim)
-            self.dropout = nn.Dropout(0.5)  # Dropout to prevent overfitting
-            self.bn = nn.BatchNorm1d(hidden_dim)  # Batch normalization for stabilization
-            self.relu = nn.ReLU()
+            self.dropout = nn.Dropout(0.5)
             self.fc3 = nn.Linear(hidden_dim, 1)
         def forward(self, x):
-            x = self.fc1(x)
-            x = self.relu(x)
-            x = self.fc2(x)
-            x = self.dropout(self.bn(self.relu(x)))  # Apply dropout and batch normalization
+            x = F.relu(self.bn1(self.fc1(x)))
+            x = F.relu(self.fc2(x))
+            x = self.dropout(x)
             x = self.fc3(x)
             return x
-
     input_dim = X_train.shape[1]
-    hidden_dim = 128  # Increased hidden units for better performance
-    model = SimpleRegressionNN(input_dim, hidden_dim)
-    
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.0005, weight_decay=0.01)  # Lowered learning rate and added weight decay
-    return model, optimizer
- 
+    hidden_dim = 128
+    model = ImprovedRegressionNN(input_dim, hidden_dim)
+    optimizer = optim.Adam(model.parameters(), lr=0.0005, weight_decay=0.01)
+    criterion = nn.SmoothL1Loss()
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5, verbose=True)
+    return model, optimizer, criterion, scheduler
+
 
 Please ensure all necessary imports are included within the function.
 Provide only executable Python code for the improved model without any comments, explanations, or markdown formatting.
