@@ -59,37 +59,29 @@ class NNModelTrainer:
                 self.model = model[0]
                 self.criterion = nn.CrossEntropyLoss()  # Default loss for classification
                 self.optimizer = optim.Adam(self.model.parameters(), lr=lr)
+                self.scheduler = None
             elif len(model) == 2:
                 self.model, second_element = model
                 if isinstance(second_element, optim.Optimizer):  # If optimizer is passed
                     self.optimizer = second_element
-                    self.criterion = nn.CrossEntropyLoss()
+                    self.criterion = nn.CrossEntropyLoss()                    
                 else:  # Assume second_element is criterion
                     self.criterion = second_element
                     self.optimizer = optim.Adam(self.model.parameters(), lr=lr)
+                self.scheduler = None
             elif len(model) == 3:
                 self.model, self.optimizer, self.criterion = model
+                self.scheduler = None
+            elif len(model) == 4:
+                self.model, self.optimizer, self.criterion, self.scheduler = model
             else:
-                raise ValueError("Invalid model tuple length. Expected 1, 2, or 3 elements.")
-
-        # # Unpack the model if provided as a tuple.
-        # if isinstance(model, tuple):
-        #     if len(model) == 1:
-        #         self.model = model[0]
-        #         self.criterion = nn.CrossEntropyLoss()  # Default loss for classification
-        #         self.optimizer = optim.Adam(self.model.parameters(), lr=lr)
-        #     elif len(model) == 2:
-        #         self.model, self.criterion = model
-        #         self.optimizer = optim.Adam(self.model.parameters(), lr=lr)
-        #     elif len(model) == 3:
-        #         self.model, self.optimizer, self.criterion = model
-        #     else:
-        #         raise ValueError("Invalid model tuple length. Expected 1, 2, or 3 elements.")
+                raise ValueError("Invalid model tuple length. Expected 1, 2, 3 or 4 elements.")
 
         else:
             self.model = model
             self.criterion = nn.CrossEntropyLoss()  # Default loss for classification
             self.optimizer = optim.Adam(self.model.parameters(), lr=lr)
+            self.scheduler = None  # No scheduler provided
 
         # Add channel dimension if missing (for grayscale images).
         if X_train.ndim == 3:  # shape: (num_samples, height, width)
@@ -169,6 +161,9 @@ class NNModelTrainer:
             val_loss = self._validate_model()
 
             print(f"Epoch [{epoch+1}/{epochs}], Loss: {avg_loss:.4f}, Val Loss: {val_loss:.4f}")
+            
+            if self.scheduler is not None:
+                self.scheduler.step(val_loss)
 
             # Early stopping check.
             if val_loss < self.best_loss:
@@ -609,6 +604,7 @@ class NNRegressionModelTrainer:
                 self.model = model[0]
                 self.criterion = nn.MSELoss()
                 self.optimizer = optim.Adam(self.model.parameters(), lr=lr)
+                self.scheduler = None
             elif len(model) == 2:
                 self.model, second_element = model
                 if isinstance(second_element, nn.Module):  # If the second element is another model (unlikely)
@@ -619,10 +615,14 @@ class NNRegressionModelTrainer:
                 else:  # Assume second_element is criterion
                     self.criterion = second_element
                     self.optimizer = optim.Adam(self.model.parameters(), lr=lr)
+                self.scheduler = None
             elif len(model) == 3:
                 self.model, self.optimizer, self.criterion = model
+                self.scheduler = None
+            elif len(model) == 4:
+                self.model, self.optimizer, self.criterion, self.scheduler = model
             else:
-                raise ValueError("Invalid model tuple length. Expected 1, 2, or 3 elements.")
+                raise ValueError("Invalid model tuple length. Expected 1, 2, 3 or 4 elements.")
                 
         else:
             self.model = model
@@ -734,6 +734,9 @@ class NNRegressionModelTrainer:
             val_loss = self._validate_model()
 
             print(f"Epoch [{epoch+1}/{epochs}], Loss: {avg_loss:.4f}, Val Loss: {val_loss:.4f}")
+            
+            if self.scheduler is not None:
+                self.scheduler.step(val_loss)
 
             # Early stopping check.
             if val_loss < self.best_loss:
