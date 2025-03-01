@@ -28,7 +28,8 @@ setup(
         'requests==2.32.3',
         'httpx==0.28.1',
         'streamlit==1.41.1',
-        'google-genai==1.3.0'
+        'google-genai==1.3.0',
+        'anthropic==0.49.0'
     ],
     entry_points={
         'console_scripts': [
