@@ -34,8 +34,12 @@ class NNLLMImprover:
         try:
             improved_code = self.llm_model.get_response(prompt)
            
+            print(f'improved_code: {improved_code}')
             return improved_code
         except Exception as e:
+            
+            print(f'ERROR: {e}')
+            
             logging.error(f"Error querying LLM: {e}")
             return None
 

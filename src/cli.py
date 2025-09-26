@@ -54,7 +54,7 @@ def select_model_cli(data,
 
     Example:
         ```bash
-        hs_torch_optimize -d path/to/data --model gpt-4o-mini --batch-size 64 --lr 0.0005 \
+        torch_optimize -d path/to/data --model gpt-4o-mini --batch-size 64 --lr 0.0005 \
                           --epochs 20 --metrics-source validation --iterations 5
         ```
 

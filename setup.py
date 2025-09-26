@@ -19,7 +19,7 @@ setup(
         'torchvision==0.19.1',          # For image datasets and transforms
         'joblib==1.4.2',               # For saving/loading models and data
         'scikit-learn==1.5.2',         # For metrics and data preprocessing
-        'openai==1.47.0',               # For LLM interaction
+        'openai',               # For LLM interaction
         'numpy==2.0.2',                # NumPy for array handling
         'pandas==2.2.2',               # For data manipulation
         'pytz==2024.2',                 # Timezone handling if needed
@@ -28,8 +28,10 @@ setup(
         'requests==2.32.3',
         'httpx==0.28.1',
         'streamlit==1.41.1',
-        'google-genai==1.3.0',
-        'anthropic==0.49.0'
+         'litellm',
+        'google-genai',
+        'anthropic==0.49.0',
+        'google-adk>=0.1.0'
     ],
     entry_points={
         'console_scripts': [
