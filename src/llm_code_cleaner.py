@@ -72,7 +72,7 @@ class LLMCodeCleaner:
             else:
                 break
 
-        return "\n".join(cleaned_lines)
+        return "\n".join(cleaned_lines).rstrip()
 
 
 # class LLMCodeCleaner:

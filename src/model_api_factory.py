@@ -1,7 +1,7 @@
-from openai_model_api import OpenAIModelAPI
-from llama_model_api import LlamaModelAPI
-from gemini_model_api import GeminiModelAPI
-from anthropic_model_api import AnthropicModelAPI
+from .openai_model_api import OpenAIModelAPI
+from .llama_model_api import LlamaModelAPI
+from .gemini_model_api import GeminiModelAPI
+from .anthropic_model_api import AnthropicModelAPI
 
 class ModelAPIFactory:
     """
@@ -19,11 +19,11 @@ class ModelAPIFactory:
         'o1-': 'openai',
         'o3-': 'openai',
         'llama': 'meta',
+        'google/': 'openrouter',
         'gemini': 'google',
         'claude': 'anthropic',
         'deepseek': 'deepseek',
         'cognitivecomputations/': 'openrouter',
-        'google/': 'openrouter',
         'mistralai/': 'openrouter',
         'qwen/': 'openrouter',
         'meta-llama/': 'openrouter',
