@@ -91,6 +91,23 @@ This will launch the application in your default web browser.
 4. **Review Results:**
    - Once the optimization is complete, a success message will display the location of the saved model history and trained models.
 
+## Natural Language Interaction with the ADK Team
+
+In addition to the CLI and Streamlit UI, you can interact directly in natural language with the ADK team.
+This interactive chat interface is implemented in the `adk` folder.
+
+### Launching the ADK Team Chat
+
+```bash
+cd adk
+adk web
+```
+
+This command starts a local web server where you can converse with the ADK team about model improvements.
+Note that this mode requires an `OPENAI_API_KEY` environment variable,
+because unlike the CLI and Streamlit interfaces (which support LLM models from any vendor),
+the ADK team chat currently only works with OpenAI models.
+
 ## Run the App as CLI with Options
 
 You can run the torch_optimize command-line interface (CLI) with several options for customizing the optimization process. 
