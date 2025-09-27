@@ -116,6 +116,7 @@ class NNModelTrainer:
         # Set device: if provided as a string, convert to torch.device.
         self.device = torch.device(device) if device is not None else torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = self.model.to(self.device)
+        self.criterion = self.criterion.to(self.device)
 
         # Early stopping parameters.
         self.patience = patience
@@ -628,6 +629,7 @@ class NNRegressionModelTrainer:
             self.model = model
             self.criterion = nn.MSELoss()  # Default loss for regression
             self.optimizer = optim.Adam(self.model.parameters(), lr=lr)
+            self.scheduler = None
 
         # If input data are NumPy arrays and have 3 dimensions (e.g., grayscale images), add a channel dimension.
         if isinstance(X_train, np.ndarray) and X_train.ndim == 3:
@@ -677,6 +679,7 @@ class NNRegressionModelTrainer:
 
         self.batch_size = batch_size
         self.model = self.model.to(self.device)
+        self.criterion = self.criterion.to(self.device)
 
         # Early stopping parameters.
         self.patience = patience

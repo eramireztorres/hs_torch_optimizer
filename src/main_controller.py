@@ -202,6 +202,10 @@ class MainController:
         Run the training and improvement process for the specified number of iterations.
         Retries up to `max_retries` times if the LLM provides invalid code.
         """
+        if not self.data:
+            logging.error("Data not loaded. Exiting.")
+            return
+
         original_model_code = self._backup_original_model()
         last_valid_model_code = original_model_code
         if not original_model_code:
