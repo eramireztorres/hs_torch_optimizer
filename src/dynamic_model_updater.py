@@ -30,6 +30,10 @@ class DynamicModelUpdater:
             new_model_code (str): The Python code for the new model and hyperparameters.
         """
         try:
+            if "class LabelSmoothingCrossEntropy(nn.Module):" in new_model_code and "loss = loss * class_weights[target]" in new_model_code:
+                new_model_code = new_model_code.replace("loss = loss * class_weights[target]", "loss = loss * class_weights.to(target.device)[target]")
+                logging.info("Applied patch for class_weights device mismatch in LabelSmoothingCrossEntropy.")
+            
             with open(self.dynamic_file_path, 'w') as f:
                 f.write(new_model_code)
             logging.info(f"Updated model code in {self.dynamic_file_path}")
