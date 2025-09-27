@@ -24,7 +24,7 @@ class MainController:
     def __init__(self, joblib_file_path, model_provider, history_file_path, model=None, is_regression=None, 
                  is_image=None, extra_info="Not available", batch_size=32, lr=0.001, epochs=10, 
                  metrics_source='validation',
-                 error_model=None, error_prompt_path=None):  
+                 error_model=None, error_prompt_path=None, initial_model_path=None):  
         """
         Initialize the MainController.
         """
@@ -35,6 +35,26 @@ class MainController:
         self.is_regression = is_regression
         self.is_image = is_image        
         
+        if initial_model_path:
+            try:
+                with open(initial_model_path, 'r') as f:
+                    init_code = f.read()
+                
+                if self.is_regression:
+                    if self.is_image:
+                        updater = DynamicImageRegressionModelUpdater()
+                    else:
+                        updater = DynamicRegressionModelUpdater()
+                else:
+                    if self.is_image:
+                        updater = DynamicImageModelUpdater()
+                    else:
+                        updater = DynamicModelUpdater()
+                updater.update_model_code(init_code)
+
+            except Exception as e:
+                print(f"Warning: could not load initial model from {initial_model_path}: {e}")
+
         self.data = self._load_data()
         self.extra_info = extra_info  # Store the additional information
         self.model_trainer = None

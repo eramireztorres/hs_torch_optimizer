@@ -21,7 +21,8 @@ def select_model_cli(data,
         lr: float = 0.001,
         epochs: int = 10,
         metrics_source: str = 'validation',
-        error_model: str = None
+        error_model: str = None,
+        initial_model_path: str = None
         ):
     """
     Command-line interface function for selecting and running a model optimization process.
@@ -95,7 +96,8 @@ def select_model_cli(data,
                                 is_regression=is_regression,
                                 metrics_source=metrics_source,
                                 error_model=error_model,
-                                error_prompt_path=error_prompt_path)  
+                                error_prompt_path=error_prompt_path,
+                                initial_model_path=initial_model_path)  
     
     controller.run(iterations=iterations)
 
