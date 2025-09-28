@@ -29,186 +29,93 @@ This project aims to optimize neural network models using PyTorch by iterating t
     pip install .
     ```
 
-## Export the API keys of your models
+## Usage
 
-### OpenAI Models
+This application can be used in three different ways:
 
-For OpenAI models, export your API key as an environment variable:
+1.  **ADK (Agent Development Kit):** For natural language interaction with an AI agent team.
+2.  **Streamlit Web UI:** A user-friendly graphical interface for guided optimization.
+3.  **CLI (Command-Line Interface):** For scripted and automated workflows.
 
-Linux or macOS:
+---
 
-```bash
-export OPENAI_API_KEY='your_openai_api_key_here'
-```
+### 1. ADK (Agent Development Kit)
 
-Or in windows:
+Interact with the optimizer through a natural language chat interface powered by the ADK. This mode allows you to converse with an AI agent team to discuss and implement model improvements.
 
-```bash
-setx OPENAI_API_KEY "your_openai_api_key_here"
-```
+**Prerequisites:**
+- This mode requires an OpenAI model. Ensure you have your OpenAI API key set as an environment variable:
+  ```bash
+  export OPENAI_API_KEY='your_openai_api_key_here'
+  ```
 
-You can export API keys for other model providers in a similar way by using the corresponding environment variable names:
-
-- **Gemini**: Use GEMINI_API_KEY
-- **Anthropic**: Use ANTHROPIC_API_KEY
-- **OpenRouter**: Use OPENROUTER_API_KEY
-
-## Web User Interface (UI)
-
-You can interact with the optimizer through a user-friendly web interface built using Streamlit.
-
-### Launching the Web UI
-
-Run the following command to start the web app:
-
-```bash
-cd web_ui
-streamlit run app.py
-```
-
-This will launch the application in your default web browser.
-
-### Configuring API Keys in the Web UI
-
-1. Open the sidebar by clicking the 🌟 icon (or swipe from the left on mobile).
-2. Enter your **OpenAI API Key** and/or **OpenRouter API Key** in the corresponding fields.
-3. Click **"Save API Keys"** to store them for future sessions.
-
-### Using the Web UI
-
-1. **Upload Data Files:**
-   - Drag and drop `.joblib` or `.csv` files into the file uploader, or enter a directory path containing your data.
-   - The app supports pre-split and unsplit datasets, both for classification and regression tasks.
-
-2. **Configure Optimization Parameters:**
-   - Enter model details such as the LLM model name, number of iterations, epochs, batch size, and learning rate.
-   - Additional fields allow you to specify whether it's a regression task, select metric sources, and provide extra information for the LLM.
-
-3. **Run Optimization:**
-   - Click **"Run Optimization"** to start the process.
-   - Real-time outputs and logs will appear on the right-hand side of the interface.
-
-4. **Review Results:**
-   - Once the optimization is complete, a success message will display the location of the saved model history and trained models.
-
-## Natural Language Interaction with the ADK Team
-
-In addition to the CLI and Streamlit UI, you can interact directly in natural language with the ADK team.
-This interactive chat interface is implemented in the `adk` folder.
-
-### Launching the ADK Team Chat
-
+**Launching the ADK:**
 ```bash
 cd adk
 adk web
 ```
+This command starts a local web server for the chat interface.
 
-This command starts a local web server where you can converse with the ADK team about model improvements.
-Note that this mode requires an `OPENAI_API_KEY` environment variable,
-because unlike the CLI and Streamlit interfaces (which support LLM models from any vendor),
-the ADK team chat currently only works with OpenAI models.
+---
 
-## Run the App as CLI with Options
+### 2. Streamlit Web UI
 
-You can run the torch_optimize command-line interface (CLI) with several options for customizing the optimization process. 
-Make sure the joblib data file contains a Python dictionary with the keys 'X_train', 'y_train', 'X_test', and 'y_test'. 
-The application uses 'y_train' data to determine whether it is a classification or regression problem.
+A user-friendly web interface built with Streamlit for a more guided experience.
 
-### Usage
-
-torch_optimize [-h] --data DATA [--history-file-path HISTORY_FILE_PATH] [--model MODEL] [--iterations ITERATIONS] [--extra-info EXTRA_INFO] [--epochs EPOCHS]
-
-### Supported Input File Formats
-
-The application supports the following input formats:
-
-1. **Pre-split `.joblib` file**:  
-   A Python dictionary containing the keys:  
-   - `'X_train'`, `'y_train'` (training data),  
-   - `'X_test'`, `'y_test'` (test data).
-
-2. **Pre-split `.csv` files**:  
-   A directory containing the following files:  
-   - `X_train.csv`, `y_train.csv`, `X_test.csv`, and `y_test.csv`.
-
-3. **Unsplit `.joblib` file**:  
-   A Python dictionary containing the keys:  
-   - `'X'` (features: it can be an array of 2-D numpy arrays for the image case),  
-   - `'y'` (targets).  
-   The application will create a validation split from the data (default split ratio is 80/20).
-
-4. **Unsplit `.csv` files**:  
-   A directory containing two files:  
-   - `X.csv` (features),  
-   - `y.csv` (targets).  
-   The application will create a validation split.
-
-5. **Single `.csv` file**:  
-   A single CSV file where:  
-   - All columns except the last are treated as features (`X`),  
-   - The last column is assumed to be the target (`y`).
-
-### Arguments
-
-- **`-h, --help`**:  
-  Show the help message and exit.
-
-- **`--data DATA`, `-d DATA`**:  
-  Path to the input dataset. Supported formats are .joblib files, directories containing .csv files, or a single .csv file.
-  The application handles validation splits automatically for unsplit datasets.
-- **`--history-file-path HISTORY_FILE_PATH`, `-hfp HISTORY_FILE_PATH`**:  
-  Path to the `.txt` or `.joblib` file where the model history will be saved. The history includes models, their hyperparameters, and performance metrics for each iteration. Default is `'model_history.joblib'`.
-
-- **`--model MODEL`, `-m MODEL`**:  
-  The name of the LLM model to use for generating suggestions and improvements for models and hyperparameters. 
-  Examples: `'meta-llama/llama-3.2-3b-instruct:free'`, `'deepseek/deepseek-chat'`. Defaults to `'gpt-4o-mini'`.
-
-- **`--is-regression IS_REGRESSION`, `-ir IS_REGRESSION`**:
-  Specify the type of model to train.  
-  Options:
-    - `true`: Regression.
-    - `false`: Classification.
-    If not specified, the model type is inferred from the data target: if they are all integers, it is assumed to be classification.
-
-- **`--metrics-source METRICS_SOURCE`, `-ms METRICS_SOURCE`**:  
-  Specify the source of the metrics to show to the LLM:
-  - **`validation`** (default): Metrics are computed on a validation split created from the training data.
-  - **`test`**: Metrics are computed on the test data.
-
-- **`--iterations ITERATIONS`, `-i ITERATIONS`**:  
-  The number of iterations to run. Each iteration involves training a model, evaluating its performance, and generating improvements. Default is `10`.
-
-- **`--error-model ERROR_MODEL`, `-em ERROR_MODEL`**:  
-  The name of the LLM model to use for error corrections. If not specified, `--model` is used.
-
-- **`--extra-info EXTRA_INFO, -ei EXTRA_INFO`**:  
-  Additional context or information to provide to the LLM for more informed suggestions. Examples include:
-  - **Class imbalance**: Disparity in the number of samples per class.
-  - **Noisy labels**: Incorrect or inconsistent labels in the dataset.
-  - **Outliers**: Unusual or extreme data points in the features or targets.  
-  Default is `'Not available'`.
-
-- **`--epochs EPOCHS, -e EPOCHS`**:  
-  Number of epochs to train the neural network in each iteration. Default is `10`.
-
-
-### Example 1
-
-Here’s an example of how to run the app with custom data, model history path, iterations, and epochs:
-
+**Launching the Web UI:**
 ```bash
-torch_optimize -d my_classification_data.joblib -hfp output_model_history.joblib -i 10 --epochs 20 -m gpt-4o
+cd web_ui
+streamlit run app.py
+```
+This will launch the application in your default web browser.
+
+**Configuring API Keys in the Web UI:**
+1.  Open the sidebar (click the 🌟 icon).
+2.  Enter your API keys for OpenAI, OpenRouter, Gemini, or Anthropic.
+3.  Click "Save API Keys".
+
+**Using the Web UI:**
+1.  **Upload Data:** Drag and drop `.joblib` or `.csv` files, or provide a directory path.
+2.  **Configure Parameters:** Set the LLM model, iterations, epochs, etc.
+3.  **Run Optimization:** Click "Run Optimization" to start.
+4.  **Review Results:** View the output and saved model history location.
+
+---
+
+### 3. CLI (Command-Line Interface)
+
+Run the optimizer from the command line for scripted and automated workflows.
+
+**Prerequisites:**
+- Export the API key for your chosen model provider as an environment variable (e.g., `OPENAI_API_KEY`, `GEMINI_API_KEY`).
+
+**Usage:**
+```bash
+torch_optimize [OPTIONS]
 ```
 
-### Example 2
+**Supported Input Formats:**
+- Pre-split `.joblib` file (`'X_train'`, `'y_train'`, `'X_test'`, `'y_test'`).
+- Directory with pre-split `.csv` files (`X_train.csv`, `y_train.csv`, etc.).
+- Unsplit `.joblib` file (`'X'`, `'y'`).
+- Directory with unsplit `.csv` files (`X.csv`, `y.csv`).
+- Single `.csv` file (last column is the target).
 
-Example with Class Imbalance for Classification:
+**Arguments:**
+- `--data, -d`: Path to the dataset.
+- `--history-file-path, -hfp`: Path to save model history.
+- `--model, -m`: LLM model to use (e.g., `'gpt-4o-mini'`).
+- `--is-regression, -ir`: Specify `true` for regression tasks.
+- `--metrics-source, -ms`: `validation` (default) or `test`.
+- `--iterations, -i`: Number of optimization iterations.
+- `--error-model, -em`: LLM for error correction.
+- `--extra-info, -ei`: Additional context for the LLM.
+- `--epochs, -e`: Training epochs per iteration.
 
+**Example:**
 ```bash
-torch_optimize -d my_classification_data.joblib -hfp classification_history.joblib -i 10 --epochs 15 --extra-info "Binary classification with class imbalance, 4:1 ratio between class 0 and class 1."
+torch_optimize -d my_data.joblib -hfp model_history.joblib -i 10 -m gpt-4o
 ```
-
-In this case, the application will pass the additional information to the LLM, which can then suggest using custom loss functions or class weighting techniques to address the class imbalance.
 
 ## License
 [MIT](LICENSE)
