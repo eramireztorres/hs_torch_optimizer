@@ -255,29 +255,50 @@ def run_torch_optimize(
     batch_size: Optional[int] = None,
     lr: Optional[float] = None,
     extra_info: Optional[str] = None,
-    output_models_path: Optional[str] = None,
     is_regression: Optional[str] = None,
-    is_image: Optional[str] = None,
     metrics_source: Optional[str] = None,
     error_model: Optional[str] = None,
-    error_prompt_path: Optional[str] = None,
     initial_model_path: Optional[str] = None,
-    quiet: bool = True,
 ) -> Dict[str, Any]:
     """
-    Invoke the torch_optimize CLI with provided parameters, including an optional
-    initial model code path for seeding the first iteration.
+    Invokes the `torch_optimize` command-line tool with the specified parameters.
 
-    Builds the command, runs subprocess, and captures output.
-    Emits warnings on non-zero exit codes but does not raise.
+    This function constructs and executes a subprocess call to the `torch_optimize`
+    CLI, capturing its output. It serves as a Python interface to the underlying
+    optimization script, allowing it to be called programmatically.
+
+    Args:
+        data (str): Path to the dataset file or directory.
+        model (Optional[str], optional): The LLM model to use for optimization.
+            Defaults to None.
+        model_provider (Optional[str], optional): The provider of the LLM.
+            Defaults to None.
+        history_file_path (Optional[str], optional): Path to store the optimization
+            history. Defaults to None.
+        iterations (Optional[int], optional): Number of optimization iterations.
+            Defaults to None.
+        epochs (Optional[int], optional): Number of training epochs per iteration.
+            Defaults to None.
+        batch_size (Optional[int], optional): Batch size for training.
+            Defaults to None.
+        lr (Optional[float], optional): Learning rate for training. Defaults to None.
+        extra_info (Optional[str], optional): Additional context for the LLM.
+            Defaults to None.
+        is_regression (Optional[str], optional): Specifies if the task is regression
+            ("true" or "false"). Defaults to None.
+        metrics_source (Optional[str], optional): The data source for metrics
+            ('validation' or 'test'). Defaults to None.
+        error_model (Optional[str], optional): The LLM model for error correction.
+            Defaults to None.
+        initial_model_path (Optional[str], optional): Path to an initial model file.
+            Defaults to None.
 
     Returns:
-      {
-        'exit_code': int,
-        'stdout': str,
-        'stderr': str,
-        'history_file_path': str  # echo of provided path or default
-      }
+        Dict[str, Any]: A dictionary containing the execution results:
+            - 'exit_code' (int): The exit code of the process.
+            - 'stdout' (str): The standard output.
+            - 'stderr' (str): The standard error.
+            - 'history_file_path' (str): The path to the history file.
     """
     # Base command
     cmd = ['torch_optimize', '--data', data]
@@ -299,18 +320,12 @@ def run_torch_optimize(
         cmd += ['--lr', str(lr)]
     if extra_info is not None:
         cmd += ['--extra-info', extra_info]
-    if output_models_path is not None:
-        cmd += ['--output-models-path', output_models_path]
     if is_regression is not None:
         cmd += ['--is-regression', is_regression]
-    if is_image is not None:
-        cmd += ['--is-image', is_image]
     if metrics_source is not None:
         cmd += ['--metrics-source', metrics_source]
     if error_model is not None:
         cmd += ['--error-model', error_model]
-    if error_prompt_path is not None:
-        cmd += ['--error-prompt-path', error_prompt_path]
     if initial_model_path is not None:
         cmd += ['--initial-model-path', initial_model_path]
 
