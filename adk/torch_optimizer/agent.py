@@ -1,4 +1,5 @@
 import os
+import re
 import pandas as pd
 import warnings
 import joblib
@@ -8,6 +9,7 @@ from google.adk.tools import FunctionTool, agent_tool
 from google.adk.models.lite_llm import LiteLlm
 import subprocess
 from google.adk.agents import Agent
+from google.adk.tools import BaseTool, ToolContext
 
 
 def fix_target_column(
@@ -360,6 +362,49 @@ def run_torch_optimize(
 def run_torch_optimize_tool():
     return FunctionTool(func=run_torch_optimize)
 
+
+def run_shell(command: str, workdir: Optional[str] = None, timeout: int = 180) -> Dict[str, Any]:
+    """
+    Runs a shell command. Deletion attempts are blocked by the agent's before_tool_callback.
+    """
+    cwd = workdir or os.getcwd()
+    try:
+        proc = subprocess.run(
+            command,
+            cwd=cwd,
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=timeout,
+            check=False,
+        )
+        return {"ok": True, "returncode": proc.returncode, "stdout": proc.stdout, "stderr": proc.stderr}
+    except subprocess.TimeoutExpired as e:
+        return {"ok": False, "returncode": None, "stdout": e.stdout or "", "stderr": f"Timeout: {e}"}
+
+
+def run_shell_tool():
+    return FunctionTool(func=run_shell)
+
+
+# ---- Safety callbacks --------------------------------------------------------------
+_DELETE_PATTERNS = re.compile(r"(?:\brm\b|\brmdir\b|\bshred\b|\bdel\b|\btruncate\b)")
+
+def before_tool_guard(
+    tool: BaseTool,
+    args: Dict[str, Any],
+    tool_context: ToolContext,
+    **kwargs,
+) -> Optional[Dict]:
+    """Block destructive shell commands unless explicitly allowed via state flag."""
+    if tool.name == "run_shell":
+        cmd = (args or {}).get("command", "")
+        allow = bool(tool_context.state.get("allow_delete", False))
+        if _DELETE_PATTERNS.search(cmd) and not allow:
+            return {"ok": False, "blocked": True, "reason": "Destructive command requires confirmation", "command": cmd}
+    return None
+
 root_agent = Agent(
     name="TorchOptimizeCoordinator",
     model=DEFAULT_MODEL,
@@ -391,6 +436,11 @@ You are the TorchOptimizeCoordinator. Given a user request to optimize a model, 
 5. **Return**  
    - Provide the final `history_file_path`, key metrics, and any generated model code file path.
 
+**Auxiliary Tool: `run_shell`**
+- You have access to a `run_shell` tool for general-purpose command-line operations. This is powerful but should be used with caution.
+- Use it to assist the user with tasks like converting unsupported file formats (e.g., TXT, HDF5) to CSV, or other data preparation steps not covered by existing tools.
+- **Crucially, you must ask the user for explicit permission before executing any command that could be destructive (like deleting or modifying files).** The system has a safeguard against common deletion commands, but your primary safety measure is user confirmation.
+
 Use these tools if needed. Always confirm critical arguments before invoking a tool.
 """,
     tools=[
@@ -399,5 +449,7 @@ Use these tools if needed. Always confirm critical arguments before invoking a t
         read_model_history_tool(),
         code_generator_tool,
         save_model_code_tool,
+        run_shell_tool(),
     ],
+    before_tool_callback=before_tool_guard,
 )
