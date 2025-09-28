@@ -11,7 +11,7 @@ from main_controller import MainController, ModelAPIFactory
 
 @cli_decorator
 def select_model_cli(data,
-        model: str = 'gpt-4o-mini',
+        model: str = 'gpt-4.1-mini',
         model_provider: str = None,   
         is_regression: Literal[None, "true", "false"] = None,                  
         history_file_path: str = 'model_history.joblib',
