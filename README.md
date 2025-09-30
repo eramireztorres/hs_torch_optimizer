@@ -94,13 +94,6 @@ Run the optimizer from the command line for scripted and automated workflows.
 torch_optimize [OPTIONS]
 ```
 
-**Supported Input Formats:**
-- Pre-split `.joblib` file (`'X_train'`, `'y_train'`, `'X_test'`, `'y_test'`).
-- Directory with pre-split `.csv` files (`X_train.csv`, `y_train.csv`, etc.).
-- Unsplit `.joblib` file (`'X'`, `'y'`).
-- Directory with unsplit `.csv` files (`X.csv`, `y.csv`).
-- Single `.csv` file (last column is the target).
-
 **Arguments:**
 - `--data, -d`: Path to the dataset.
 - `--history-file-path, -hfp`: Path to save model history.
@@ -116,6 +109,37 @@ torch_optimize [OPTIONS]
 ```bash
 torch_optimize -d my_data.joblib -hfp model_history.joblib -i 10 -m gpt-4o
 ```
+
+### 4. Supported Input File Formats
+
+The application supports the following input formats:
+
+1. **Pre-split `.joblib` file**:  
+   A Python dictionary containing the keys:  
+   - `'X_train'`, `'y_train'` (training data),  
+   - `'X_test'`, `'y_test'` (test data).
+
+2. **Pre-split `.csv` files**:  
+   A directory containing the following files:  
+   - `X_train.csv`, `y_train.csv`, `X_test.csv`, and `y_test.csv`.
+
+3. **Unsplit `.joblib` file**:  
+   A Python dictionary containing the keys:  
+   - `'X'` (features),  
+   - `'y'` (targets).  
+   The application will create a validation split from the data (default split ratio is 80/20).
+
+4. **Unsplit `.csv` files**:  
+   A directory containing two files:  
+   - `X.csv` (features),  
+   - `y.csv` (targets).  
+   The application will create a validation split.
+
+5. **Single `.csv` file**:  
+   A single CSV file where:  
+   - All columns except the last are treated as features (`X`),  
+   - The last column is assumed to be the target (`y`).
+
 
 ## License
 [MIT](LICENSE)
