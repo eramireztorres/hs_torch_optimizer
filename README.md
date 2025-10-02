@@ -89,8 +89,7 @@ This starts a local web server for the chat interface.
 
 ---
 
-Unlike the CLI and Streamlit Web UI, which support LLMs from multiple vendors, the ADK Chat Interface currently supports **OpenAI and Gemini models**. You must set at least the `OPENAI_API_KEY`. Gemini support is optional but recommended if you want to experiment with Google ADK agents.
-
+Unlike the CLI and Streamlit Web UI, which support LLMs from multiple vendors, the ADK Chat Interface currently supports **OpenAI models**. Setting GOOGLE_API_KEY is mandatory for ADK use and setting OPENAI_API_KEY is mandatory for agent use. 
 
 ---
 
