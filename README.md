@@ -43,18 +43,54 @@ This application can be used in three different ways:
 
 Interact with the optimizer through a natural language chat interface powered by the ADK. This mode allows you to converse with an AI agent team to discuss and implement model improvements.
 
-**Prerequisites:**
-- This mode requires an OpenAI model. Ensure you have your OpenAI API key set as an environment variable:
-  ```bash
-  export OPENAI_API_KEY='your_openai_api_key_here'
-  ```
+### Environment Variables
 
-**Launching the ADK:**
+The ADK interface requires API keys. You can set them in **two ways**:
+
+#### Option 1: Create a `.env` file (recommended for local development)
+
+In the project root, create a file named `.env` with the following content:
+
+```bash
+OPENAI_API_KEY=PASTE_YOUR_OPENAI_API_KEY_HERE
+GOOGLE_GENAI_USE_VERTEXAI=FALSE
+GOOGLE_API_KEY=PASTE_YOUR_GEMINI_API_KEY_HERE
+```
+
+> Note: If `GOOGLE_GENAI_USE_VERTEXAI=TRUE`, ADK will attempt to use Vertex AI instead of the Gemini API.
+
+#### Option 2: Export variables in your shell (useful on servers)
+
+```bash
+export OPENAI_API_KEY='your_openai_api_key_here'
+export GOOGLE_GENAI_USE_VERTEXAI=FALSE
+export GOOGLE_API_KEY='your_gemini_api_key_here'
+```
+
+On Windows (PowerShell):
+
+```powershell
+setx OPENAI_API_KEY "your_openai_api_key_here"
+setx GOOGLE_GENAI_USE_VERTEXAI "FALSE"
+setx GOOGLE_API_KEY "your_gemini_api_key_here"
+```
+---
+
+### Launching the ADK
+
+After setting your environment variables, launch the ADK interface:
+
 ```bash
 cd adk
 adk web
 ```
-This command starts a local web server for the chat interface.
+
+This starts a local web server for the chat interface.
+
+---
+
+Unlike the CLI and Streamlit Web UI, which support LLMs from multiple vendors, the ADK Chat Interface currently supports **OpenAI and Gemini models**. You must set at least the `OPENAI_API_KEY`. Gemini support is optional but recommended if you want to experiment with Google ADK agents.
+
 
 ---
 
