@@ -3,8 +3,6 @@ import json
 import numpy as np
 import torch
 import os
-import sys
-sys.path.append(os.path.dirname(__file__))
 
 prompt_file_path = os.path.join(os.path.dirname(__file__), 'prompts/classification_prompt.txt')
 prompt_regression_file_path = os.path.join(os.path.dirname(__file__), 'prompts/regression_prompt.txt')

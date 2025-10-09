@@ -14,7 +14,7 @@ SyncHttpxClientWrapper.__init__ = new_init
 
 
 
-from base_model_api import BaseModelAPI
+from src.base_model_api import BaseModelAPI
 
 class OpenAIModelAPI(BaseModelAPI):
     """

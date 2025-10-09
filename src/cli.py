@@ -1,22 +1,21 @@
 from typing import Literal
-
-import sys
 import os
-sys.path.append(os.path.dirname(__file__))
 
-from cli_decorator import cli_decorator
-from main_controller import MainController, ModelAPIFactory
+from src.cli_decorator import cli_decorator
+from src.main_controller import MainController
+from src.model_api_factory import ModelAPIFactory
+from src.optimization_config import OptimizationConfig
 
 #%%
 
 @cli_decorator
 def select_model_cli(data,
         model: str = 'gpt-4.1-mini',
-        model_provider: str = None,   
-        is_regression: Literal[None, "true", "false"] = None,                  
+        model_provider: str = None,
+        is_regression: Literal[None, "true", "false"] = None,
         history_file_path: str = 'model_history.joblib',
         iterations: int = 10,
-        extra_info: str = 'Not available',  
+        extra_info: str = 'Not available',
         batch_size: int = 32,
         lr: float = 0.001,
         epochs: int = 10,
@@ -66,33 +65,36 @@ def select_model_cli(data,
         torch_optimize --data path/to/data.csv --model gpt-4o-mini --iterations 5
         ```
     """
-    
+
     error_prompt_path = os.path.join(os.path.dirname(__file__), 'prompts/error_correction_prompt.txt')
-    
-    if metrics_source not in ['validation', 'test']:
-        raise ValueError("metrics_source must be 'validation' or 'test'")
-    
+
     if not model_provider:
         model_provider = ModelAPIFactory.get_provider_from_model(model)
 
     print(f"Using model: {model} (provider: {model_provider})")
     print(f"Metrics source: {metrics_source}")
-    
+
     if is_regression is not None:
         is_regression = is_regression == 'true'
 
-    controller = MainController(data, model_provider, history_file_path, 
-                                model=model,
-                                extra_info=extra_info, 
-                                batch_size=batch_size, 
-                                lr=lr, 
-                                epochs=epochs,
-                                is_regression=is_regression,
-                                metrics_source=metrics_source,
-                                error_model=error_model,
-                                error_prompt_path=error_prompt_path,
-                                initial_model_path=initial_model_path)  
-    
+    config = OptimizationConfig(
+        joblib_file_path=data,
+        model_provider=model_provider,
+        history_file_path=history_file_path,
+        model=model,
+        is_regression=is_regression,
+        is_image=None,
+        extra_info=extra_info,
+        batch_size=batch_size,
+        lr=lr,
+        epochs=epochs,
+        metrics_source=metrics_source,
+        error_model=error_model,
+        error_prompt_path=error_prompt_path,
+        initial_model_path=initial_model_path
+    )
+
+    controller = MainController(config)
     controller.run(iterations=iterations)
 
 

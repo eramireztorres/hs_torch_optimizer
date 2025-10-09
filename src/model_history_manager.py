@@ -30,47 +30,6 @@ class ModelHistoryManager:
         return {key: float(value) if isinstance(value, (np.float32, np.float64, torch.Tensor)) else value
                 for key, value in metrics.items()}
 
-    # def save_model_history(self, model_code, metrics):
-    #     """
-    #     Save the current model's code and metrics into the history.
-
-    #     Args:
-    #         model_code (str): The Python code of the model.
-    #         metrics (dict): The performance metrics of the model.
-    #     """
-    #     # Convert metrics to native Python types before saving
-    #     converted_metrics = self._convert_metrics_to_python_types(metrics)
-        
-    #     history_entry = {
-    #         'model_code': model_code,
-    #         'metrics': converted_metrics
-    #     }
-    #     self.model_history.append(history_entry)
-
-    #     try:
-    #         joblib.dump(self.model_history, self.history_file_path)
-    #         logging.info(f"Model history saved to {self.history_file_path}")
-    #     except Exception as e:
-    #         logging.error(f"Failed to save model history: {e}")
-
-    # def load_model_history(self):
-    #     """
-    #     Load the model history from the joblib file.
-
-    #     Returns:
-    #         list: The history of models, including their code and performance metrics.
-    #     """
-    #     try:
-    #         self.model_history = joblib.load(self.history_file_path)
-    #         logging.info(f"Model history loaded from {self.history_file_path}")
-    #     except FileNotFoundError:
-    #         logging.warning(f"No existing history found at {self.history_file_path}. Starting with an empty history.")
-    #         self.model_history = []
-    #     except Exception as e:
-    #         logging.error(f"Failed to load model history: {e}")
-    #         self.model_history = []
-
-    #     return self.model_history
 
     def load_model_history(self):
         """
@@ -104,7 +63,6 @@ class ModelHistoryManager:
             metrics (dict): The performance metrics of the model.
         """
         
-        # Convert metrics to native Python types before saving
         converted_metrics = self._convert_metrics_to_python_types(metrics)
         
         history_entry = {
@@ -147,7 +105,6 @@ class ModelHistoryManager:
         """Load the history from a text file."""
         try:
             with open(self.history_file_path, 'r') as f:
-                # For simplicity, assumes the text file is formatted correctly.
                 self.model_history = []
                 lines = f.readlines()
                 current_entry = {}

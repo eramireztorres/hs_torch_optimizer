@@ -1,8 +1,8 @@
 import importlib
+import importlib.util
+import sys
 import os
 import logging
-import sys
-sys.path.append(os.path.dirname(__file__))
 
 dynamic_file_path = os.path.join(os.path.dirname(__file__), 'dynamic_model.py')
 dynamic_regression_file_path = os.path.join(os.path.dirname(__file__), 'dynamic_regression_model.py')
