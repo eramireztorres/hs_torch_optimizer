@@ -12,7 +12,8 @@ setup(
 
     include_package_data=True,  # Ensure package data is included
     package_data={
-        '': ['prompts/*.txt'],  # Include all .txt files in the prompts folder
+        'src': ['prompts/*.txt'],  # Include all .txt files in the src/prompts folder
+        'src.dynamic_models': ['*.py'],  # Include dynamic model template files
     },
     install_requires=[
         'torch',               # Core PyTorch library
@@ -31,7 +32,7 @@ setup(
          'litellm',
         'google-genai',
         'anthropic>=0.49.0',
-        'google-adk>=0.1.0',
+        'google-adk',
          'xlsxwriter',
         'xlrd'
 

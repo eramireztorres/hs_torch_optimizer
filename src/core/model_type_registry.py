@@ -167,13 +167,13 @@ def create_default_registry() -> ModelTypeRegistry:
     Returns:
         A ModelTypeRegistry instance with all standard components registered
     """
-    from src.dynamic_model_updater import (
+    from src.dynamic_models.dynamic_model_updater import (
         DynamicModelUpdater,
         DynamicRegressionModelUpdater,
         DynamicImageModelUpdater,
         DynamicImageRegressionModelUpdater
     )
-    from src.llm_improver import (
+    from src.core.llm_improver import (
         NNLLMImprover,
         NNRegressionLLMImprover,
         NNImageLLMImprover,

@@ -4,10 +4,10 @@ import numpy as np
 import torch
 import os
 
-prompt_file_path = os.path.join(os.path.dirname(__file__), 'prompts/classification_prompt.txt')
-prompt_regression_file_path = os.path.join(os.path.dirname(__file__), 'prompts/regression_prompt.txt')
-prompt_image_file_path = os.path.join(os.path.dirname(__file__), 'prompts/image_classification_prompt.txt')
-prompt_image_regression_file_path = os.path.join(os.path.dirname(__file__), 'prompts/image_regression_prompt.txt')
+prompt_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'prompts/classification_prompt.txt')
+prompt_regression_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'prompts/regression_prompt.txt')
+prompt_image_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'prompts/image_classification_prompt.txt')
+prompt_image_regression_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'prompts/image_regression_prompt.txt')
 
 
 class NNLLMImprover:

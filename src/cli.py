@@ -1,9 +1,9 @@
 from typing import Literal
 import os
 
-from src.cli_decorator import cli_decorator
+from src.utils.cli_decorator import cli_decorator
 from src.main_controller import MainController
-from src.model_api_factory import ModelAPIFactory
+from src.api.model_api_factory import ModelAPIFactory
 from src.optimization_config import OptimizationConfig
 
 #%%

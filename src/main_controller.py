@@ -2,16 +2,16 @@ import logging
 import numpy as np
 import pandas as pd
 
-from src.model_trainer import NNModelTrainer, NNRegressionModelTrainer
-from src.llm_improver import NNLLMImprover, NNRegressionLLMImprover, NNImageLLMImprover, NNImageRegressionLLMImprover
-from src.model_history_manager import ModelHistoryManager
-from src.dynamic_model_updater import DynamicModelUpdater, DynamicRegressionModelUpdater, DynamicImageModelUpdater, DynamicImageRegressionModelUpdater
-from src.model_api_factory import ModelAPIFactory
-from src.data_loader import DataLoader
-from src.llm_code_cleaner import LLMCodeCleaner
-from src.error_corrector import ErrorCorrector
+from src.training.model_trainer import NNModelTrainer, NNRegressionModelTrainer
+from src.core.llm_improver import NNLLMImprover, NNRegressionLLMImprover, NNImageLLMImprover, NNImageRegressionLLMImprover
+from src.core.model_history_manager import ModelHistoryManager
+from src.dynamic_models.dynamic_model_updater import DynamicModelUpdater, DynamicRegressionModelUpdater, DynamicImageModelUpdater, DynamicImageRegressionModelUpdater
+from src.api.model_api_factory import ModelAPIFactory
+from src.training.data_loader import DataLoader
+from src.core.llm_code_cleaner import LLMCodeCleaner
+from src.core.error_corrector import ErrorCorrector
 from src.optimization_config import OptimizationConfig
-from src.model_type_registry import create_default_registry, TaskType, DataType
+from src.core.model_type_registry import create_default_registry, TaskType, DataType
 
 
 #%%

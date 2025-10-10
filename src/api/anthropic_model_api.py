@@ -1,6 +1,6 @@
 import os
 import anthropic
-from src.base_model_api import BaseModelAPI
+from src.api.base_model_api import BaseModelAPI
 
 class AnthropicModelAPI(BaseModelAPI):
     """
