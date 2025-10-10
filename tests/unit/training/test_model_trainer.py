@@ -7,6 +7,7 @@ import numpy as np
 from src.training.model_trainer import NNModelTrainer, NNRegressionModelTrainer
 
 
+@pytest.mark.unit
 class TestNNModelTrainer:
     """Test suite for NNModelTrainer (classification)."""
 
@@ -141,6 +142,7 @@ class TestNNModelTrainer:
         assert trainer.batch_size == 16
 
 
+@pytest.mark.unit
 class TestNNRegressionModelTrainer:
     """Test suite for NNRegressionModelTrainer."""
 

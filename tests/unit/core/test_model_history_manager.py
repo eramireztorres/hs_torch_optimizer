@@ -6,6 +6,7 @@ from pathlib import Path
 from src.core.model_history_manager import ModelHistoryManager
 
 
+@pytest.mark.unit
 class TestModelHistoryManager:
     """Test suite for ModelHistoryManager."""
 

@@ -6,6 +6,7 @@ from unittest.mock import patch
 from src.api.base_model_api import BaseModelAPI
 
 
+@pytest.mark.unit
 class TestBaseModelAPI:
     """Test suite for BaseModelAPI."""
 

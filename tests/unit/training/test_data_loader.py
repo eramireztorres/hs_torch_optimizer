@@ -8,6 +8,7 @@ from pathlib import Path
 from src.training.data_loader import DataLoader
 
 
+@pytest.mark.unit
 class TestDataLoader:
     """Test suite for DataLoader."""
 

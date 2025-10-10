@@ -13,6 +13,7 @@ from src.dynamic_models.dynamic_model_updater import (
 )
 
 
+@pytest.mark.unit
 class TestDynamicModelUpdater:
     """Test suite for DynamicModelUpdater."""
 

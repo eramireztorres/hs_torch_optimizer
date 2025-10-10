@@ -5,6 +5,7 @@ from unittest.mock import patch
 from src.utils.cli_decorator import cli_decorator
 
 
+@pytest.mark.unit
 class TestCLIDecorator:
     """Test suite for CLI decorator."""
 

@@ -9,6 +9,7 @@ from src.core.model_type_registry import (
 )
 
 
+@pytest.mark.unit
 class TestModelTypeRegistry:
     """Test suite for ModelTypeRegistry."""
 

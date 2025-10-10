@@ -5,6 +5,7 @@ from unittest.mock import Mock, MagicMock
 from src.core.error_corrector import ErrorCorrector
 
 
+@pytest.mark.unit
 class TestErrorCorrector:
     """Test suite for ErrorCorrector."""
 

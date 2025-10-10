@@ -8,6 +8,7 @@ from src.api.anthropic_model_api import AnthropicModelAPI
 from src.api.llama_model_api import LlamaModelAPI
 
 
+@pytest.mark.unit
 class TestModelAPIFactory:
     """Test suite for ModelAPIFactory."""
 

@@ -4,6 +4,7 @@ import pytest
 from src.core.llm_code_cleaner import LLMCodeCleaner
 
 
+@pytest.mark.unit
 class TestLLMCodeCleaner:
     """Test suite for LLMCodeCleaner."""
 
