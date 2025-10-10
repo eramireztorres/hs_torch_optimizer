@@ -37,6 +37,26 @@ setup(
         'xlrd'
 
     ],
+    extras_require={
+        'test': [
+            'pytest>=7.0.0',
+            'pytest-cov>=4.0.0',
+            'pytest-mock>=3.10.0',
+            'pytest-timeout>=2.1.0',
+            'coverage>=7.0.0',
+        ],
+        'dev': [
+            'pytest>=7.0.0',
+            'pytest-cov>=4.0.0',
+            'pytest-mock>=3.10.0',
+            'pytest-timeout>=2.1.0',
+            'coverage>=7.0.0',
+            'black>=23.0.0',
+            'flake8>=6.0.0',
+            'mypy>=1.0.0',
+            'isort>=5.12.0',
+        ],
+    },
     entry_points={
         'console_scripts': [
             'torch_optimize=src.cli:select_model_cli',  # Entry point for CLI
