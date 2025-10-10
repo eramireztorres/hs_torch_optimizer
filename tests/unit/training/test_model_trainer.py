@@ -88,9 +88,9 @@ class TestNNModelTrainer:
         metrics = trainer.evaluate_model()
 
         assert 'accuracy' in metrics
-        assert 'precision' in metrics
-        assert 'recall' in metrics
-        assert 'f1' in metrics
+        assert 'overall_precision' in metrics
+        assert 'overall_recall' in metrics
+        assert 'overall_f1_score' in metrics
         assert 0 <= metrics['accuracy'] <= 1
 
     def test_device_selection(self, simple_model, sample_classification_data):
@@ -215,9 +215,9 @@ class TestNNRegressionModelTrainer:
 
         metrics = trainer.evaluate_model()
 
-        assert 'mse' in metrics
-        assert 'r2' in metrics
-        assert metrics['mse'] >= 0
+        assert 'mean_squared_error' in metrics
+        assert 'r2_score' in metrics
+        assert metrics['mean_squared_error'] >= 0
 
     def test_multi_output_regression(self, sample_regression_data):
         """Test multi-output regression."""
@@ -244,4 +244,4 @@ class TestNNRegressionModelTrainer:
         )
 
         metrics = trainer.evaluate_model()
-        assert 'mse' in metrics
+        assert 'mean_squared_error' in metrics

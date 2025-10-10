@@ -14,7 +14,7 @@ class TestModelHistoryManager:
         """Test initialization creates empty history."""
         history_path = temp_dir / "history.joblib"
         manager = ModelHistoryManager(history_file_path=str(history_path))
-        assert manager.history == []
+        assert manager.model_history == []
 
     def test_save_model_history_creates_file(self, temp_dir, mock_model_code, sample_metrics):
         """Test saving model history creates file."""
@@ -69,7 +69,7 @@ class TestModelHistoryManager:
         manager = ModelHistoryManager(history_file_path=str(history_path))
 
         manager.save_model_history(mock_model_code, sample_metrics)
-        history = manager.get_history()
+        history = manager.model_history
 
         assert len(history) == 1
         assert history[0]['model_code'] == mock_model_code

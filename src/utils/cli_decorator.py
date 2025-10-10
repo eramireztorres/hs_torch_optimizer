@@ -23,11 +23,15 @@ def extract_arg_descriptions(docstring):
 def cli_decorator(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
+        # If function is called directly with args/kwargs, use them instead of parsing CLI
+        if args or kwargs:
+            return func(*args, **kwargs)
+
         sig = signature(func)
         type_hints = get_type_hints(func)
         # parser = argparse.ArgumentParser(description=func.__doc__)
         parser = argparse.ArgumentParser()
-        
+
         # Extract argument descriptions from the docstring
         arg_descriptions = extract_arg_descriptions(func.__doc__ or "")
 
@@ -43,9 +47,9 @@ def cli_decorator(func):
                 initials = None  # skip this shorthand
 
             is_list = (
-                name.endswith('_list') or 
+                name.endswith('_list') or
                 (name in type_hints and (
-                    type_hints[name] == list or 
+                    type_hints[name] == list or
                     (hasattr(type_hints[name], '__origin__') and type_hints[name].__origin__ is list)
                 ))
             )
@@ -55,18 +59,18 @@ def cli_decorator(func):
                 # Check if the type hint is a Literal
                 if getattr(type_hints[name], '__origin__', None) == Literal:
                     choices = type_hints[name].__args__
-            
+
             arg_kwargs = {
                 'type': str,
                 'choices': choices
             }
-            
+
             if name in type_hints:
                 if type_hints[name] == int:
                     arg_kwargs['type'] = int
                 elif type_hints[name] == float:
                     arg_kwargs['type'] = float
-                        
+
             if param.default == Parameter.empty:  # If no default is provided, set as required
                 arg_kwargs['required'] = True
 
@@ -85,9 +89,9 @@ def cli_decorator(func):
                 if param.default != Parameter.empty:
                     arg_help += f" (default: {param.default})"
                 arg_kwargs['help'] = arg_help
-            
+
             action = parser.add_argument(*arg_flags, **arg_kwargs)
-            
+
             # add the generated short version to reserved_shorthands to avoid future conflicts
             if initials:
                 reserved_shorthands.add(initials)
@@ -95,7 +99,7 @@ def cli_decorator(func):
         parsed_args = vars(parser.parse_args())
         # Convert the CLI args back to function args by replacing hyphens with underscores
         func_args = {k.replace('-', '_'): v for k, v in parsed_args.items()}
-        
+
         return func(**func_args)
 
     return wrapper

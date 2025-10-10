@@ -49,7 +49,9 @@ class ModelAPIFactory:
         Deduce the provider from the model string.
         Returns 'llama' if no known substring is found.
         """
-        for key, provider in cls._model_to_provider.items():
+        # Sort by length descending to match more specific patterns first (e.g., 'meta-llama/' before 'llama')
+        sorted_patterns = sorted(cls._model_to_provider.items(), key=lambda x: len(x[0]), reverse=True)
+        for key, provider in sorted_patterns:
             if key in model_name:
                 return provider
         # Fallback to 'llama' for any unknown substring
