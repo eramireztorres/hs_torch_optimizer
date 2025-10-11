@@ -274,22 +274,6 @@ class MainController:
             )
 
 
-    def _clean_code(self, code):
-        """
-        Clean the LLM-generated code to remove unnecessary markdown formatting.
-        """
-        if not code:
-            logging.warning("Received empty code from LLM.")
-            return ""
-        try:
-            code = re.sub(r'^```.*\n', '', code).strip().strip('```').strip()
-            code = re.sub(r'^python\n', '', code).strip()
-            return code
-        except Exception as e:
-            logging.error(f"Failed to clean the code: {e}")
-            return code  # Return uncleaned code as fallback
-
-
     def _get_dynamic_model_code(self):
         """
         Retrieve the current Python code from the dynamic model file.
