@@ -1,6 +1,8 @@
 import os
-from src.api.base_model_api import BaseModelAPI
+
 from google import genai
+
+from src.api.base_model_api import BaseModelAPI
 
 
 class GeminiModelAPI(BaseModelAPI):

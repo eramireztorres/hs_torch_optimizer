@@ -1,7 +1,9 @@
 """Tests for CLI decorator."""
 
-import pytest
 from unittest.mock import patch
+
+import pytest
+
 from src.utils.cli_decorator import cli_decorator
 
 

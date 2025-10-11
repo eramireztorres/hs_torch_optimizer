@@ -1,10 +1,12 @@
 """Tests for DataLoader."""
 
-import pytest
+from pathlib import Path
+
+import joblib
 import numpy as np
 import pandas as pd
-import joblib
-from pathlib import Path
+import pytest
+
 from src.training.data_loader import DataLoader
 
 

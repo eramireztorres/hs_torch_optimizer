@@ -1,9 +1,10 @@
 """Tests for model trainers."""
 
+import numpy as np
 import pytest
 import torch
 import torch.nn as nn
-import numpy as np
+
 from src.training.model_trainer import NNModelTrainer, NNRegressionModelTrainer
 
 

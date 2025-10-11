@@ -1,16 +1,15 @@
 """Tests for DynamicModelUpdater."""
 
+from pathlib import Path
+
+import numpy as np
 import pytest
 import torch
 import torch.nn as nn
-import numpy as np
-from pathlib import Path
+
 from src.dynamic_models.dynamic_model_updater import (
-    DynamicModelUpdater,
-    DynamicRegressionModelUpdater,
-    DynamicImageModelUpdater,
-    DynamicImageRegressionModelUpdater,
-)
+    DynamicImageModelUpdater, DynamicImageRegressionModelUpdater,
+    DynamicModelUpdater, DynamicRegressionModelUpdater)
 
 
 @pytest.mark.unit

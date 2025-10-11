@@ -1,8 +1,10 @@
 """Tests for ModelHistoryManager."""
 
-import pytest
-import joblib
 from pathlib import Path
+
+import joblib
+import pytest
+
 from src.core.model_history_manager import ModelHistoryManager
 
 

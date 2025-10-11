@@ -1,8 +1,10 @@
 """Tests for BaseModelAPI."""
 
-import pytest
 import os
 from unittest.mock import patch
+
+import pytest
+
 from src.api.base_model_api import BaseModelAPI
 
 

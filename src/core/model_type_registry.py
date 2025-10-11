@@ -6,8 +6,8 @@ for selecting the appropriate model updater and improver classes based on
 task type (regression/classification) and data type (image/tabular).
 """
 
-from typing import Tuple, Type
 from enum import Enum
+from typing import Tuple, Type
 
 
 class TaskType(Enum):
@@ -146,18 +146,12 @@ def create_default_registry() -> ModelTypeRegistry:
     Returns:
         A ModelTypeRegistry instance with all standard components registered
     """
+    from src.core.llm_improver import (NNImageLLMImprover,
+                                       NNImageRegressionLLMImprover,
+                                       NNLLMImprover, NNRegressionLLMImprover)
     from src.dynamic_models.dynamic_model_updater import (
-        DynamicModelUpdater,
-        DynamicRegressionModelUpdater,
-        DynamicImageModelUpdater,
-        DynamicImageRegressionModelUpdater,
-    )
-    from src.core.llm_improver import (
-        NNLLMImprover,
-        NNRegressionLLMImprover,
-        NNImageLLMImprover,
-        NNImageRegressionLLMImprover,
-    )
+        DynamicImageModelUpdater, DynamicImageRegressionModelUpdater,
+        DynamicModelUpdater, DynamicRegressionModelUpdater)
 
     registry = ModelTypeRegistry()
 

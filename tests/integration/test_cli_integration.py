@@ -1,9 +1,10 @@
 """CLI integration tests."""
 
-import pytest
 import subprocess
-import joblib
 from pathlib import Path
+
+import joblib
+import pytest
 
 
 @pytest.mark.integration

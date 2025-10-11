@@ -1,5 +1,7 @@
 import os
+
 import requests
+
 from src.api.base_model_api import BaseModelAPI
 
 

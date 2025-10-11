@@ -1,7 +1,7 @@
-from src.api.openai_model_api import OpenAIModelAPI
-from src.api.llama_model_api import LlamaModelAPI
-from src.api.gemini_model_api import GeminiModelAPI
 from src.api.anthropic_model_api import AnthropicModelAPI
+from src.api.gemini_model_api import GeminiModelAPI
+from src.api.llama_model_api import LlamaModelAPI
+from src.api.openai_model_api import OpenAIModelAPI
 
 
 class ModelAPIFactory:

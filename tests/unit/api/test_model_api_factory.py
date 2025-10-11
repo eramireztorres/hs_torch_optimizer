@@ -1,12 +1,14 @@
 """Tests for ModelAPIFactory."""
 
-import pytest
 import os
+
+import pytest
+
+from src.api.anthropic_model_api import AnthropicModelAPI
+from src.api.gemini_model_api import GeminiModelAPI
+from src.api.llama_model_api import LlamaModelAPI
 from src.api.model_api_factory import ModelAPIFactory
 from src.api.openai_model_api import OpenAIModelAPI
-from src.api.gemini_model_api import GeminiModelAPI
-from src.api.anthropic_model_api import AnthropicModelAPI
-from src.api.llama_model_api import LlamaModelAPI
 
 # Skip tests that require API keys if the keys are not set in the environment
 skip_openai = pytest.mark.skipif(

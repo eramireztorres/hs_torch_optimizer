@@ -1,8 +1,9 @@
-import logging
 import json
+import logging
+import os
+
 import numpy as np
 import torch
-import os
 
 prompt_file_path = os.path.join(
     os.path.dirname(os.path.dirname(__file__)), "prompts/classification_prompt.txt"

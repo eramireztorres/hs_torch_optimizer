@@ -1,4 +1,5 @@
 from string import Template
+
 from src.api.base_model_api import BaseModelAPI
 
 

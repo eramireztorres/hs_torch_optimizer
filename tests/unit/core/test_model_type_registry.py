@@ -1,12 +1,9 @@
 """Tests for ModelTypeRegistry."""
 
 import pytest
-from src.core.model_type_registry import (
-    ModelTypeRegistry,
-    TaskType,
-    DataType,
-    create_default_registry,
-)
+
+from src.core.model_type_registry import (DataType, ModelTypeRegistry,
+                                          TaskType, create_default_registry)
 
 
 @pytest.mark.unit

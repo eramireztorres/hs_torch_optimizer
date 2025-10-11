@@ -4,10 +4,10 @@ def load_model(X_train, y_train):
     Automatically infers input dimensions and adjusts for unknown output classes.
     """
 
+    import numpy as np
+    import torch
     import torch.nn as nn
     import torch.nn.functional as F
-    import torch
-    import numpy as np
 
     class FlexibleImageClassificationNN(nn.Module):
         def __init__(self, num_channels, img_height, img_width, num_classes):

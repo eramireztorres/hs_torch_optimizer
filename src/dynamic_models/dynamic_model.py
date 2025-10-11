@@ -1,8 +1,8 @@
 def load_model(X_train, y_train, hidden_dim=128):
+    import numpy as np
     import torch
     import torch.nn as nn
     import torch.nn.functional as F
-    import numpy as np
 
     class SimpleClassificationNN(nn.Module):
         def __init__(self, input_dim, hidden_dim, output_dim):

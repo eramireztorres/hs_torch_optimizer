@@ -1,9 +1,10 @@
 import os
 
-# import openai
-
 import openai
 from openai._base_client import SyncHttpxClientWrapper
+
+# import openai
+
 
 _old_init = SyncHttpxClientWrapper.__init__
 

@@ -1,11 +1,8 @@
 """Dynamic model management modules."""
 
 from src.dynamic_models.dynamic_model_updater import (
-    DynamicModelUpdater,
-    DynamicRegressionModelUpdater,
-    DynamicImageModelUpdater,
-    DynamicImageRegressionModelUpdater,
-)
+    DynamicImageModelUpdater, DynamicImageRegressionModelUpdater,
+    DynamicModelUpdater, DynamicRegressionModelUpdater)
 
 __all__ = [
     "DynamicModelUpdater",

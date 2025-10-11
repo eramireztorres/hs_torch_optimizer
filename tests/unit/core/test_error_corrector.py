@@ -1,7 +1,9 @@
 """Tests for ErrorCorrector."""
 
+from unittest.mock import MagicMock, Mock
+
 import pytest
-from unittest.mock import Mock, MagicMock
+
 from src.core.error_corrector import ErrorCorrector
 
 

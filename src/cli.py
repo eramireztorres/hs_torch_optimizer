@@ -1,10 +1,10 @@
-from typing import Literal
 import os
+from typing import Literal
 
-from src.utils.cli_decorator import cli_decorator
-from src.main_controller import MainController
 from src.api.model_api_factory import ModelAPIFactory
+from src.main_controller import MainController
 from src.optimization_config import OptimizationConfig
+from src.utils.cli_decorator import cli_decorator
 
 # %%
 

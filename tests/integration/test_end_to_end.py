@@ -1,9 +1,11 @@
 """End-to-end integration tests."""
 
-import pytest
-import joblib
-from unittest.mock import Mock, patch
 from pathlib import Path
+from unittest.mock import Mock, patch
+
+import joblib
+import pytest
+
 from src.main_controller import MainController
 from src.optimization_config import OptimizationConfig
 

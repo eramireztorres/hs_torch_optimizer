@@ -1,10 +1,8 @@
 import argparse
 import functools
-from inspect import signature, Parameter
-from typing import List, Literal, get_type_hints
-
-
 import re
+from inspect import Parameter, signature
+from typing import List, Literal, get_type_hints
 
 
 def extract_arg_descriptions(docstring):
@@ -109,10 +107,10 @@ def cli_decorator(func):
     return wrapper
 
 
-import unittest
-from unittest.mock import patch
-from io import StringIO
 import sys
+import unittest
+from io import StringIO
+from unittest.mock import patch
 
 
 class TestCliDecorator(unittest.TestCase):
