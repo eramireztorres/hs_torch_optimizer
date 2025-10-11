@@ -1,11 +1,16 @@
 """Tests for ModelAPIFactory."""
 
 import pytest
+import os
 from src.api.model_api_factory import ModelAPIFactory
 from src.api.openai_model_api import OpenAIModelAPI
 from src.api.gemini_model_api import GeminiModelAPI
 from src.api.anthropic_model_api import AnthropicModelAPI
 from src.api.llama_model_api import LlamaModelAPI
+
+# Skip tests that require API keys if the keys are not set in the environment
+skip_openai = pytest.mark.skipif(not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY is not set")
+skip_google = pytest.mark.skipif(not os.environ.get("GOOGLE_API_KEY"), reason="GOOGLE_API_KEY is not set")
 
 
 @pytest.mark.unit
@@ -39,12 +44,14 @@ class TestModelAPIFactory:
         """Test fallback to llama for unknown models."""
         assert ModelAPIFactory.get_provider_from_model('unknown-model') == 'llama'
 
+    @skip_openai
     def test_get_model_api_openai(self):
         """Test getting OpenAI API instance."""
         api = ModelAPIFactory.get_model_api(provider='openai', model='gpt-4o-mini')
         assert isinstance(api, OpenAIModelAPI)
         assert api.model == 'gpt-4o-mini'
 
+    @skip_google
     def test_get_model_api_gemini(self):
         """Test getting Gemini API instance."""
         api = ModelAPIFactory.get_model_api(provider='google', model='gemini-2.0-flash')
@@ -63,6 +70,7 @@ class TestModelAPIFactory:
         assert isinstance(api, LlamaModelAPI)
         assert api.model == 'llama-3.1'
 
+    @skip_openai
     def test_get_model_api_auto_detect_provider(self):
         """Test automatic provider detection from model name."""
         api = ModelAPIFactory.get_model_api(provider=None, model='gpt-4o-mini')
