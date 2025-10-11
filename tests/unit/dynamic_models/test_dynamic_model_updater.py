@@ -8,8 +8,11 @@ import torch
 import torch.nn as nn
 
 from src.dynamic_models.dynamic_model_updater import (
-    DynamicImageModelUpdater, DynamicImageRegressionModelUpdater,
-    DynamicModelUpdater, DynamicRegressionModelUpdater)
+    DynamicImageModelUpdater,
+    DynamicImageRegressionModelUpdater,
+    DynamicModelUpdater,
+    DynamicRegressionModelUpdater,
+)
 
 
 @pytest.mark.unit

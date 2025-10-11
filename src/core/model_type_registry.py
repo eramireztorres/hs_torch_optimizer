@@ -146,12 +146,18 @@ def create_default_registry() -> ModelTypeRegistry:
     Returns:
         A ModelTypeRegistry instance with all standard components registered
     """
-    from src.core.llm_improver import (NNImageLLMImprover,
-                                       NNImageRegressionLLMImprover,
-                                       NNLLMImprover, NNRegressionLLMImprover)
+    from src.core.llm_improver import (
+        NNImageLLMImprover,
+        NNImageRegressionLLMImprover,
+        NNLLMImprover,
+        NNRegressionLLMImprover,
+    )
     from src.dynamic_models.dynamic_model_updater import (
-        DynamicImageModelUpdater, DynamicImageRegressionModelUpdater,
-        DynamicModelUpdater, DynamicRegressionModelUpdater)
+        DynamicImageModelUpdater,
+        DynamicImageRegressionModelUpdater,
+        DynamicModelUpdater,
+        DynamicRegressionModelUpdater,
+    )
 
     registry = ModelTypeRegistry()
 
