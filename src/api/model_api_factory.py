@@ -3,6 +3,7 @@ from src.api.llama_model_api import LlamaModelAPI
 from src.api.gemini_model_api import GeminiModelAPI
 from src.api.anthropic_model_api import AnthropicModelAPI
 
+
 class ModelAPIFactory:
     """
     Factory class to instantiate model API clients based on the provider name or model string.
@@ -13,23 +14,23 @@ class ModelAPIFactory:
 
     # Map models to providers
     _model_to_provider = {
-        'gpt': 'openai',
-        'gpt-4o': 'openai',
-        'gpt-4o-mini': 'openai',
-        'o1-': 'openai',
-        'o3-': 'openai',
-        'llama': 'meta',
-        'gemini': 'google',
-        'claude': 'anthropic',
-        'deepseek': 'deepseek',
-        'cognitivecomputations/': 'openrouter',
-        'google/': 'openrouter',
-        'mistralai/': 'openrouter',
-        'qwen/': 'openrouter',
-        'meta-llama/': 'openrouter',
-        'deepseek/': 'openrouter',
-        'nvidia/': 'openrouter',
-        'microsoft/': 'openrouter'
+        "gpt": "openai",
+        "gpt-4o": "openai",
+        "gpt-4o-mini": "openai",
+        "o1-": "openai",
+        "o3-": "openai",
+        "llama": "meta",
+        "gemini": "google",
+        "claude": "anthropic",
+        "deepseek": "deepseek",
+        "cognitivecomputations/": "openrouter",
+        "google/": "openrouter",
+        "mistralai/": "openrouter",
+        "qwen/": "openrouter",
+        "meta-llama/": "openrouter",
+        "deepseek/": "openrouter",
+        "nvidia/": "openrouter",
+        "microsoft/": "openrouter",
     }
 
     @classmethod
@@ -50,15 +51,19 @@ class ModelAPIFactory:
         Returns 'llama' if no known substring is found.
         """
         # Sort by length descending to match more specific patterns first (e.g., 'meta-llama/' before 'llama')
-        sorted_patterns = sorted(cls._model_to_provider.items(), key=lambda x: len(x[0]), reverse=True)
+        sorted_patterns = sorted(
+            cls._model_to_provider.items(), key=lambda x: len(x[0]), reverse=True
+        )
         for key, provider in sorted_patterns:
             if key in model_name:
                 return provider
         # Fallback to 'llama' for any unknown substring
-        return 'llama'
+        return "llama"
 
     @classmethod
-    def get_model_api(cls, provider='llama', model='meta-llama/llama-3.1-405b-instruct:free', **kwargs):
+    def get_model_api(
+        cls, provider="llama", model="meta-llama/llama-3.1-405b-instruct:free", **kwargs
+    ):
         """
         Get an instance of the model API client based on the provider name or model string.
 
@@ -74,8 +79,8 @@ class ModelAPIFactory:
             ValueError: If neither provider nor model is recognized.
         """
         if not provider and model:
-            provider = cls.get_provider_from_model(model)           
-        if provider and provider.lower() in cls._model_registry:           
+            provider = cls.get_provider_from_model(model)
+        if provider and provider.lower() in cls._model_registry:
             model_class = cls._model_registry[provider.lower()]
             # Pass the model string explicitly to the constructor via kwargs
             return model_class(model=model, **kwargs)
@@ -83,9 +88,9 @@ class ModelAPIFactory:
 
 
 # Register the models with the factory
-ModelAPIFactory.register_model('openai', OpenAIModelAPI)
-ModelAPIFactory.register_model('meta', LlamaModelAPI)
-ModelAPIFactory.register_model('google', GeminiModelAPI)
-ModelAPIFactory.register_model('anthropic', AnthropicModelAPI)
-ModelAPIFactory.register_model('deepseek', LlamaModelAPI)
-ModelAPIFactory.register_model('openrouter', LlamaModelAPI)
+ModelAPIFactory.register_model("openai", OpenAIModelAPI)
+ModelAPIFactory.register_model("meta", LlamaModelAPI)
+ModelAPIFactory.register_model("google", GeminiModelAPI)
+ModelAPIFactory.register_model("anthropic", AnthropicModelAPI)
+ModelAPIFactory.register_model("deepseek", LlamaModelAPI)
+ModelAPIFactory.register_model("openrouter", LlamaModelAPI)

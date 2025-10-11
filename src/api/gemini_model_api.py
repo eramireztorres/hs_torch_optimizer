@@ -2,6 +2,7 @@ import os
 from src.api.base_model_api import BaseModelAPI
 from google import genai
 
+
 class GeminiModelAPI(BaseModelAPI):
     """
     Gemini model API client that wraps the Google Gemini API,
@@ -30,9 +31,7 @@ class GeminiModelAPI(BaseModelAPI):
         """
         try:
             response = self.client.models.generate_content(
-                model=self.model,
-                contents=prompt,
-                **kwargs
+                model=self.model, contents=prompt, **kwargs
             )
             if response and hasattr(response, "text"):
                 return response.text.strip()
@@ -42,7 +41,6 @@ class GeminiModelAPI(BaseModelAPI):
         except Exception as e:
             print(f"An error occurred while fetching response: {e}")
             return None
-
 
 
 # import os

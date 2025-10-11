@@ -36,15 +36,15 @@ class LLMCodeCleaner:
         if not isinstance(llm_code, str):
             raise TypeError("llm_code must be a string")
 
-        llm_code = re.sub(r'^```(?:\w+)?\n', '', llm_code).strip()
-        llm_code = re.sub(r'\n?```$', '', llm_code).strip()
+        llm_code = re.sub(r"^```(?:\w+)?\n", "", llm_code).strip()
+        llm_code = re.sub(r"\n?```$", "", llm_code).strip()
 
         lines = [line.expandtabs(4) for line in llm_code.splitlines()]
 
         start_index: Optional[int] = None
         base_indent: Optional[int] = None
         for i, line in enumerate(lines):
-            if re.match(r'^\s*def\s+load_model\s*\(', line):
+            if re.match(r"^\s*def\s+load_model\s*\(", line):
                 start_index = i
                 base_indent = len(line) - len(line.lstrip())
                 break
@@ -53,7 +53,7 @@ class LLMCodeCleaner:
             return ""
 
         cleaned_lines = [lines[start_index]]
-        for line in lines[start_index + 1:]:
+        for line in lines[start_index + 1 :]:
             if line.strip() == "":
                 cleaned_lines.append(line)
                 continue
@@ -103,4 +103,3 @@ if __name__ == "__main__":
     cleaner = LLMCodeCleaner()
     cleaned_code = cleaner.clean_code(raw_llm_code)
     print(cleaned_code)
-

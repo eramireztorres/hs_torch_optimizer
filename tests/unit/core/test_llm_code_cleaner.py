@@ -49,7 +49,7 @@ def test():
 ```"""
         cleaned = self.cleaner.clean_code(code)
         # Should remove all fences
-        assert '```' not in cleaned
+        assert "```" not in cleaned
 
     def test_clean_code_without_fences(self):
         """Test cleaning code without markdown fences."""
@@ -68,7 +68,7 @@ def test():
         """Test cleaning code with trailing whitespace."""
         code = "import torch\ndef test():\n    pass   \n\n"
         cleaned = self.cleaner.clean_code(code)
-        assert not cleaned.endswith('\n')
+        assert not cleaned.endswith("\n")
 
     def test_clean_empty_code(self):
         """Test cleaning empty code."""

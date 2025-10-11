@@ -23,7 +23,7 @@ def load_model(X_train, y_train, hidden_dim=128):
             return x
 
     input_dim = X_train.shape[1]
-    
+
     # Ensure y_train is converted to a numpy array for unique class counting
     if isinstance(y_train, torch.Tensor):
         y_train_np = y_train.cpu().numpy()
@@ -35,7 +35,9 @@ def load_model(X_train, y_train, hidden_dim=128):
 
     # Automatically calculate class weights using inverse frequency
     class_counts = np.bincount(y_train_np)
-    class_weights = 1.0 / (class_counts + 1e-6)  # Add small epsilon to avoid division by zero
+    class_weights = 1.0 / (
+        class_counts + 1e-6
+    )  # Add small epsilon to avoid division by zero
     class_weights = torch.FloatTensor(class_weights)
 
     # Ensure the weights match the number of classes
@@ -43,4 +45,3 @@ def load_model(X_train, y_train, hidden_dim=128):
     optimizer = torch.optim.Adam(model.parameters(), lr=0.0005, weight_decay=0.01)
 
     return model, optimizer, criterion
-

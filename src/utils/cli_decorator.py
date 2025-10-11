@@ -6,6 +6,7 @@ from typing import List, Literal, get_type_hints
 
 import re
 
+
 def extract_arg_descriptions(docstring):
     """Extract argument descriptions from a function's docstring."""
     # Extract content under 'Args:'
@@ -14,7 +15,9 @@ def extract_arg_descriptions(docstring):
         return {}
 
     # Split individual arguments
-    args = re.findall(r"- (\w+) \((.*?)\): (.*?)(- |\n|$)", arg_section.group(1), re.DOTALL)
+    args = re.findall(
+        r"- (\w+) \((.*?)\): (.*?)(- |\n|$)", arg_section.group(1), re.DOTALL
+    )
 
     # Return a dictionary with argument names as keys and their descriptions as values
     return {arg[0]: arg[2].strip() for arg in args}
@@ -35,60 +38,61 @@ def cli_decorator(func):
         # Extract argument descriptions from the docstring
         arg_descriptions = extract_arg_descriptions(func.__doc__ or "")
 
-        reserved_shorthands = {'-h'}  # initialize with known shorthands
+        reserved_shorthands = {"-h"}  # initialize with known shorthands
 
         for name, param in sig.parameters.items():
             # Convert pythonic snake_case to hyphenated-case for CLI
-            cli_name = name.replace('_', '-')
+            cli_name = name.replace("_", "-")
 
             # Create short versions based on initials of words separated by underscores
-            initials = '-' + ''.join([word[0] for word in name.split('_')])
+            initials = "-" + "".join([word[0] for word in name.split("_")])
             if initials in reserved_shorthands:
                 initials = None  # skip this shorthand
 
-            is_list = (
-                name.endswith('_list') or
-                (name in type_hints and (
-                    type_hints[name] == list or
-                    (hasattr(type_hints[name], '__origin__') and type_hints[name].__origin__ is list)
-                ))
+            is_list = name.endswith("_list") or (
+                name in type_hints
+                and (
+                    type_hints[name] == list
+                    or (
+                        hasattr(type_hints[name], "__origin__")
+                        and type_hints[name].__origin__ is list
+                    )
+                )
             )
 
             choices = None
-            if name in type_hints and hasattr(type_hints[name], '__args__'):
+            if name in type_hints and hasattr(type_hints[name], "__args__"):
                 # Check if the type hint is a Literal
-                if getattr(type_hints[name], '__origin__', None) == Literal:
+                if getattr(type_hints[name], "__origin__", None) == Literal:
                     choices = type_hints[name].__args__
 
-            arg_kwargs = {
-                'type': str,
-                'choices': choices
-            }
+            arg_kwargs = {"type": str, "choices": choices}
 
             if name in type_hints:
                 if type_hints[name] == int:
-                    arg_kwargs['type'] = int
+                    arg_kwargs["type"] = int
                 elif type_hints[name] == float:
-                    arg_kwargs['type'] = float
+                    arg_kwargs["type"] = float
 
-            if param.default == Parameter.empty:  # If no default is provided, set as required
-                arg_kwargs['required'] = True
-
+            if (
+                param.default == Parameter.empty
+            ):  # If no default is provided, set as required
+                arg_kwargs["required"] = True
 
             if is_list:
-                arg_kwargs['nargs'] = '*'
+                arg_kwargs["nargs"] = "*"
 
-            arg_flags = [f'--{cli_name}']  # Note the use of cli_name here
+            arg_flags = [f"--{cli_name}"]  # Note the use of cli_name here
             if initials:
                 arg_flags.append(initials)
-            arg_kwargs['default'] = param.default
+            arg_kwargs["default"] = param.default
             # arg_kwargs['help'] = f"(default: {param.default})"
-            arg_kwargs['dest'] = name
+            arg_kwargs["dest"] = name
             if name in arg_descriptions:
                 arg_help = arg_descriptions[name]
                 if param.default != Parameter.empty:
                     arg_help += f" (default: {param.default})"
-                arg_kwargs['help'] = arg_help
+                arg_kwargs["help"] = arg_help
 
             action = parser.add_argument(*arg_flags, **arg_kwargs)
 
@@ -98,23 +102,25 @@ def cli_decorator(func):
 
         parsed_args = vars(parser.parse_args())
         # Convert the CLI args back to function args by replacing hyphens with underscores
-        func_args = {k.replace('-', '_'): v for k, v in parsed_args.items()}
+        func_args = {k.replace("-", "_"): v for k, v in parsed_args.items()}
 
         return func(**func_args)
 
     return wrapper
+
 
 import unittest
 from unittest.mock import patch
 from io import StringIO
 import sys
 
+
 class TestCliDecorator(unittest.TestCase):
 
     def run_cli(self, func, cli_args):
         """Utility function to emulate CLI argument passing and capture the output."""
         sys.argv = ["test_program_name"] + cli_args.split()
-        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+        with patch("sys.stdout", new_callable=StringIO) as mock_stdout:
             func()
             return mock_stdout.getvalue().strip()
 
@@ -157,7 +163,7 @@ class TestCliDecorator(unittest.TestCase):
         # Test that an invalid choice raises an error
         with self.assertRaises(SystemExit):
             self.run_cli(mock_function, "--choice D")
-            
+
     def test_numeric_type_hints(self):
         @cli_decorator
         def mock_numeric_function(a: int, b: float):
@@ -176,6 +182,5 @@ class TestCliDecorator(unittest.TestCase):
             self.run_cli(mock_numeric_function, "--a 10 --b three-point-one-four")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
-

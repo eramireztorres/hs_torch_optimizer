@@ -12,12 +12,14 @@ from enum import Enum
 
 class TaskType(Enum):
     """Enum for task types."""
+
     CLASSIFICATION = "classification"
     REGRESSION = "regression"
 
 
 class DataType(Enum):
     """Enum for data types."""
+
     TABULAR = "tabular"
     IMAGE = "image"
 
@@ -36,10 +38,7 @@ class ModelTypeRegistry:
         self._improver_registry = {}
 
     def register_updater(
-        self,
-        task_type: TaskType,
-        data_type: DataType,
-        updater_class: Type
+        self, task_type: TaskType, data_type: DataType, updater_class: Type
     ):
         """
         Register a model updater class for a specific task and data type.
@@ -53,10 +52,7 @@ class ModelTypeRegistry:
         self._updater_registry[key] = updater_class
 
     def register_improver(
-        self,
-        task_type: TaskType,
-        data_type: DataType,
-        improver_class: Type
+        self, task_type: TaskType, data_type: DataType, improver_class: Type
     ):
         """
         Register an LLM improver class for a specific task and data type.
@@ -69,11 +65,7 @@ class ModelTypeRegistry:
         key = (task_type, data_type)
         self._improver_registry[key] = improver_class
 
-    def get_updater_class(
-        self,
-        task_type: TaskType,
-        data_type: DataType
-    ) -> Type:
+    def get_updater_class(self, task_type: TaskType, data_type: DataType) -> Type:
         """
         Get the appropriate updater class for the given task and data type.
 
@@ -95,11 +87,7 @@ class ModelTypeRegistry:
             )
         return self._updater_registry[key]
 
-    def get_improver_class(
-        self,
-        task_type: TaskType,
-        data_type: DataType
-    ) -> Type:
+    def get_improver_class(self, task_type: TaskType, data_type: DataType) -> Type:
         """
         Get the appropriate improver class for the given task and data type.
 
@@ -121,11 +109,7 @@ class ModelTypeRegistry:
             )
         return self._improver_registry[key]
 
-    def create_updater(
-        self,
-        task_type: TaskType,
-        data_type: DataType
-    ):
+    def create_updater(self, task_type: TaskType, data_type: DataType):
         """
         Create an instance of the appropriate updater.
 
@@ -139,12 +123,7 @@ class ModelTypeRegistry:
         updater_class = self.get_updater_class(task_type, data_type)
         return updater_class()
 
-    def create_improver(
-        self,
-        task_type: TaskType,
-        data_type: DataType,
-        llm_model
-    ):
+    def create_improver(self, task_type: TaskType, data_type: DataType, llm_model):
         """
         Create an instance of the appropriate improver.
 
@@ -171,25 +150,39 @@ def create_default_registry() -> ModelTypeRegistry:
         DynamicModelUpdater,
         DynamicRegressionModelUpdater,
         DynamicImageModelUpdater,
-        DynamicImageRegressionModelUpdater
+        DynamicImageRegressionModelUpdater,
     )
     from src.core.llm_improver import (
         NNLLMImprover,
         NNRegressionLLMImprover,
         NNImageLLMImprover,
-        NNImageRegressionLLMImprover
+        NNImageRegressionLLMImprover,
     )
 
     registry = ModelTypeRegistry()
 
-    registry.register_updater(TaskType.CLASSIFICATION, DataType.TABULAR, DynamicModelUpdater)
-    registry.register_updater(TaskType.REGRESSION, DataType.TABULAR, DynamicRegressionModelUpdater)
-    registry.register_updater(TaskType.CLASSIFICATION, DataType.IMAGE, DynamicImageModelUpdater)
-    registry.register_updater(TaskType.REGRESSION, DataType.IMAGE, DynamicImageRegressionModelUpdater)
+    registry.register_updater(
+        TaskType.CLASSIFICATION, DataType.TABULAR, DynamicModelUpdater
+    )
+    registry.register_updater(
+        TaskType.REGRESSION, DataType.TABULAR, DynamicRegressionModelUpdater
+    )
+    registry.register_updater(
+        TaskType.CLASSIFICATION, DataType.IMAGE, DynamicImageModelUpdater
+    )
+    registry.register_updater(
+        TaskType.REGRESSION, DataType.IMAGE, DynamicImageRegressionModelUpdater
+    )
 
     registry.register_improver(TaskType.CLASSIFICATION, DataType.TABULAR, NNLLMImprover)
-    registry.register_improver(TaskType.REGRESSION, DataType.TABULAR, NNRegressionLLMImprover)
-    registry.register_improver(TaskType.CLASSIFICATION, DataType.IMAGE, NNImageLLMImprover)
-    registry.register_improver(TaskType.REGRESSION, DataType.IMAGE, NNImageRegressionLLMImprover)
+    registry.register_improver(
+        TaskType.REGRESSION, DataType.TABULAR, NNRegressionLLMImprover
+    )
+    registry.register_improver(
+        TaskType.CLASSIFICATION, DataType.IMAGE, NNImageLLMImprover
+    )
+    registry.register_improver(
+        TaskType.REGRESSION, DataType.IMAGE, NNImageRegressionLLMImprover
+    )
 
     return registry

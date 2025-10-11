@@ -5,8 +5,9 @@ import torch
 import logging
 import json
 
+
 class ModelHistoryManager:
-    def __init__(self, history_file_path='model_history.joblib'):
+    def __init__(self, history_file_path="model_history.joblib"):
         """
         Initialize the ModelHistoryManager.
 
@@ -15,21 +16,26 @@ class ModelHistoryManager:
         """
         self.history_file_path = history_file_path
         self.model_history = []
-        self.is_text_file = history_file_path.endswith('.txt')
+        self.is_text_file = history_file_path.endswith(".txt")
 
     def _convert_metrics_to_python_types(self, metrics):
         """
         Convert all values in the metrics dictionary to Python-native types.
-        
+
         Args:
             metrics (dict): The performance metrics of the model.
 
         Returns:
             dict: The metrics with Python-native types.
         """
-        return {key: float(value) if isinstance(value, (np.float32, np.float64, torch.Tensor)) else value
-                for key, value in metrics.items()}
-
+        return {
+            key: (
+                float(value)
+                if isinstance(value, (np.float32, np.float64, torch.Tensor))
+                else value
+            )
+            for key, value in metrics.items()
+        }
 
     def load_model_history(self):
         """
@@ -39,7 +45,9 @@ class ModelHistoryManager:
             list: The history of models, including their code and performance metrics.
         """
         if not os.path.exists(self.history_file_path):
-            logging.warning(f"No existing history found at {self.history_file_path}. Starting with an empty history.")
+            logging.warning(
+                f"No existing history found at {self.history_file_path}. Starting with an empty history."
+            )
             self.model_history = []
             return self.model_history
 
@@ -62,13 +70,10 @@ class ModelHistoryManager:
             model_code (str): The Python code of the model.
             metrics (dict): The performance metrics of the model.
         """
-        
+
         converted_metrics = self._convert_metrics_to_python_types(metrics)
-        
-        history_entry = {
-            'model_code': model_code,
-            'metrics': converted_metrics
-        }
+
+        history_entry = {"model_code": model_code, "metrics": converted_metrics}
         self.model_history.append(history_entry)
 
         try:
@@ -87,24 +92,26 @@ class ModelHistoryManager:
     def _load_from_joblib(self):
         """Load the history from a joblib file."""
         self.model_history = joblib.load(self.history_file_path)
-        logging.info(f"Model history loaded from {self.history_file_path} (joblib format)")
+        logging.info(
+            f"Model history loaded from {self.history_file_path} (joblib format)"
+        )
 
     def _save_as_text(self):
         """Save the history as a human-readable text file."""
-        with open(self.history_file_path, 'w') as f:
+        with open(self.history_file_path, "w") as f:
             for idx, entry in enumerate(self.model_history, 1):
                 f.write(f"=== Iteration {idx} ===\n")
                 f.write("Model Code:\n")
                 f.write(f"{entry['model_code']}\n\n")
                 f.write("Metrics:\n")
-                json.dump(entry['metrics'], f, indent=4)
+                json.dump(entry["metrics"], f, indent=4)
                 f.write("\n\n")
         logging.info(f"Model history saved to {self.history_file_path} (text format)")
 
     def _load_from_text(self):
         """Load the history from a text file."""
         try:
-            with open(self.history_file_path, 'r') as f:
+            with open(self.history_file_path, "r") as f:
                 self.model_history = []
                 lines = f.readlines()
                 current_entry = {}
@@ -114,14 +121,19 @@ class ModelHistoryManager:
                             self.model_history.append(current_entry)
                             current_entry = {}
                     elif line.startswith("Model Code:"):
-                        current_entry['model_code'] = ""
+                        current_entry["model_code"] = ""
                     elif line.startswith("Metrics:"):
                         metrics_json = line.strip().split("Metrics:")[1]
-                        current_entry['metrics'] = json.loads(metrics_json)
-                    elif 'model_code' in current_entry and not current_entry['model_code']:
-                        current_entry['model_code'] += line.strip()
+                        current_entry["metrics"] = json.loads(metrics_json)
+                    elif (
+                        "model_code" in current_entry
+                        and not current_entry["model_code"]
+                    ):
+                        current_entry["model_code"] += line.strip()
                 if current_entry:
                     self.model_history.append(current_entry)
-            logging.info(f"Model history loaded from {self.history_file_path} (text format)")
+            logging.info(
+                f"Model history loaded from {self.history_file_path} (text format)"
+            )
         except Exception as e:
             raise ValueError(f"Failed to parse text history file: {e}")

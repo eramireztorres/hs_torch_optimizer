@@ -35,10 +35,11 @@ def load_model(X_train, y_train):
 
     # Ensure input has 4 dimensions: (batch_size, channels, height, width)
     if len(X_train.shape) != 4:
-        raise ValueError("Expected input with 4 dimensions (batch_size, channels, height, width)")
+        raise ValueError(
+            "Expected input with 4 dimensions (batch_size, channels, height, width)"
+        )
 
     input_shape = X_train.shape[1:]  # (channels, height, width)
     output_dim = y_train.shape[1] if len(y_train.shape) > 1 else 1
 
     return FlexibleImageRegressionNN(input_shape, output_dim)
-

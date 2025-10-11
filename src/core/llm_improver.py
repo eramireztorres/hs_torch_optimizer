@@ -4,14 +4,25 @@ import numpy as np
 import torch
 import os
 
-prompt_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'prompts/classification_prompt.txt')
-prompt_regression_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'prompts/regression_prompt.txt')
-prompt_image_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'prompts/image_classification_prompt.txt')
-prompt_image_regression_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'prompts/image_regression_prompt.txt')
+prompt_file_path = os.path.join(
+    os.path.dirname(os.path.dirname(__file__)), "prompts/classification_prompt.txt"
+)
+prompt_regression_file_path = os.path.join(
+    os.path.dirname(os.path.dirname(__file__)), "prompts/regression_prompt.txt"
+)
+prompt_image_file_path = os.path.join(
+    os.path.dirname(os.path.dirname(__file__)),
+    "prompts/image_classification_prompt.txt",
+)
+prompt_image_regression_file_path = os.path.join(
+    os.path.dirname(os.path.dirname(__file__)), "prompts/image_regression_prompt.txt"
+)
 
 
 class NNLLMImprover:
-    def __init__(self, llm_model, model_history=None, prompt_file_path=prompt_file_path):
+    def __init__(
+        self, llm_model, model_history=None, prompt_file_path=prompt_file_path
+    ):
         """
         Initialize the improver for neural networks.
 
@@ -24,20 +35,22 @@ class NNLLMImprover:
         self.model_history = model_history if model_history else []
         self.prompt_file_path = prompt_file_path
 
-    def get_model_suggestions(self, current_model_code, metrics, extra_info="Not available"):
+    def get_model_suggestions(
+        self, current_model_code, metrics, extra_info="Not available"
+    ):
         """
         Query the LLM for model improvements.
         """
         prompt = self._format_prompt(current_model_code, metrics, extra_info)
         try:
             improved_code = self.llm_model.get_response(prompt)
-           
-            print(f'improved_code: {improved_code}')
+
+            print(f"improved_code: {improved_code}")
             return improved_code
         except Exception as e:
-            
-            print(f'ERROR: {e}')
-            
+
+            print(f"ERROR: {e}")
+
             logging.error(f"Error querying LLM: {e}")
             return None
 
@@ -45,14 +58,13 @@ class NNLLMImprover:
         """
         Log model history for future iterations.
         """
-        self.model_history.append({'model_code': model_code, 'metrics': metrics})
-        
+        self.model_history.append({"model_code": model_code, "metrics": metrics})
 
     def _format_prompt(self, current_model_code, metrics, extra_info):
         """
         Format the prompt with the current model and metrics.
         """
-        with open(self.prompt_file_path, 'r') as file:
+        with open(self.prompt_file_path, "r") as file:
             prompt_template = file.read()
 
         # Ensure that self.model_history and metrics are JSON serializable
@@ -66,9 +78,8 @@ class NNLLMImprover:
             current_model_code=current_model_code,
             metrics_str=metrics_str,
             history_str=history_str,
-            extra_info=extra_info
+            extra_info=extra_info,
         )
-
 
     def _convert_to_python_types(self, obj):
         """
@@ -87,15 +98,29 @@ class NNLLMImprover:
         else:
             return obj
 
+
 class NNRegressionLLMImprover(NNLLMImprover):
-    def __init__(self, llm_model, model_history=None, prompt_file_path=prompt_regression_file_path):
+    def __init__(
+        self,
+        llm_model,
+        model_history=None,
+        prompt_file_path=prompt_regression_file_path,
+    ):
         super().__init__(llm_model, model_history, prompt_file_path)
 
 
 class NNImageLLMImprover(NNLLMImprover):
-    def __init__(self, llm_model, model_history=None, prompt_file_path=prompt_image_file_path):
+    def __init__(
+        self, llm_model, model_history=None, prompt_file_path=prompt_image_file_path
+    ):
         super().__init__(llm_model, model_history, prompt_file_path)
 
+
 class NNImageRegressionLLMImprover(NNLLMImprover):
-    def __init__(self, llm_model, model_history=None, prompt_file_path=prompt_image_regression_file_path):
+    def __init__(
+        self,
+        llm_model,
+        model_history=None,
+        prompt_file_path=prompt_image_regression_file_path,
+    ):
         super().__init__(llm_model, model_history, prompt_file_path)

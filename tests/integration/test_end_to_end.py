@@ -44,26 +44,28 @@ def load_model(X_train, y_train):
     return SimpleModel()
 """
 
-        with patch('src.api.model_api_factory.ModelAPIFactory.get_model_api') as mock_api:
+        with patch(
+            "src.api.model_api_factory.ModelAPIFactory.get_model_api"
+        ) as mock_api:
             mock_model = Mock()
             mock_model.get_response = Mock(return_value=mock_llm_response)
             mock_api.return_value = mock_model
 
             config = OptimizationConfig(
                 joblib_file_path=str(data_path),
-                model_provider='openai',
+                model_provider="openai",
                 history_file_path=str(history_path),
-                model='gpt-4o-mini',
+                model="gpt-4o-mini",
                 is_regression=False,
                 is_image=False,
-                extra_info='Test run',
+                extra_info="Test run",
                 batch_size=32,
                 lr=0.001,
                 epochs=2,
-                metrics_source='validation',
+                metrics_source="validation",
                 error_model=None,
                 error_prompt_path=str(error_prompt_path),
-                initial_model_path=None
+                initial_model_path=None,
             )
 
             controller = MainController(config)
@@ -73,8 +75,8 @@ def load_model(X_train, y_train):
         assert history_path.exists()
         history = joblib.load(history_path)
         assert len(history) > 0
-        assert 'model_code' in history[0]
-        assert 'metrics' in history[0]
+        assert "model_code" in history[0]
+        assert "metrics" in history[0]
 
     def test_full_optimization_pipeline_regression(
         self, temp_dir, sample_regression_data
@@ -103,26 +105,28 @@ def load_model(X_train, y_train):
     return RegressionModel()
 """
 
-        with patch('src.api.model_api_factory.ModelAPIFactory.get_model_api') as mock_api:
+        with patch(
+            "src.api.model_api_factory.ModelAPIFactory.get_model_api"
+        ) as mock_api:
             mock_model = Mock()
             mock_model.get_response = Mock(return_value=mock_llm_response)
             mock_api.return_value = mock_model
 
             config = OptimizationConfig(
                 joblib_file_path=str(data_path),
-                model_provider='openai',
+                model_provider="openai",
                 history_file_path=str(history_path),
-                model='gpt-4o-mini',
+                model="gpt-4o-mini",
                 is_regression=True,
                 is_image=False,
-                extra_info='Test regression',
+                extra_info="Test regression",
                 batch_size=32,
                 lr=0.001,
                 epochs=2,
-                metrics_source='validation',
+                metrics_source="validation",
                 error_model=None,
                 error_prompt_path=str(error_prompt_path),
-                initial_model_path=None
+                initial_model_path=None,
             )
 
             controller = MainController(config)
@@ -143,7 +147,9 @@ def load_model(X_train, y_train):
         error_prompt_path.write_text("Fix: ${faulty_code}\nError: ${error_msg}")
 
         # First return bad code, then good code on error correction
-        bad_code = "def load_model(X_train, y_train):\n    return None  # This will fail"
+        bad_code = (
+            "def load_model(X_train, y_train):\n    return None  # This will fail"
+        )
 
         good_code = """
 import torch.nn as nn
@@ -160,7 +166,9 @@ def load_model(X_train, y_train):
     return SimpleModel()
 """
 
-        with patch('src.api.model_api_factory.ModelAPIFactory.get_model_api') as mock_api:
+        with patch(
+            "src.api.model_api_factory.ModelAPIFactory.get_model_api"
+        ) as mock_api:
             mock_model = Mock()
             # Return bad code first, then good code
             mock_model.get_response = Mock(side_effect=[bad_code, good_code, good_code])
@@ -168,19 +176,19 @@ def load_model(X_train, y_train):
 
             config = OptimizationConfig(
                 joblib_file_path=str(data_path),
-                model_provider='openai',
+                model_provider="openai",
                 history_file_path=str(history_path),
-                model='gpt-4o-mini',
+                model="gpt-4o-mini",
                 is_regression=False,
                 is_image=False,
-                extra_info='Test error correction',
+                extra_info="Test error correction",
                 batch_size=32,
                 lr=0.001,
                 epochs=1,
-                metrics_source='validation',
-                error_model='gpt-4o-mini',
+                metrics_source="validation",
+                error_model="gpt-4o-mini",
                 error_prompt_path=str(error_prompt_path),
-                initial_model_path=None
+                initial_model_path=None,
             )
 
             controller = MainController(config)

@@ -3,7 +3,7 @@ def load_model(X_train, y_train):
     Returns a flexible convolutional neural network (CNN) for image classification.
     Automatically infers input dimensions and adjusts for unknown output classes.
     """
-    
+
     import torch.nn as nn
     import torch.nn.functional as F
     import torch
@@ -15,7 +15,7 @@ def load_model(X_train, y_train):
             self.conv1 = nn.Conv2d(num_channels, 32, kernel_size=3, stride=1, padding=1)
             self.conv2 = nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1)
             self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
-            
+
             # Dynamically calculate the size of the flattened features after pooling
             flattened_size = 64 * (img_height // 4) * (img_width // 4)
             self.fc1 = nn.Linear(flattened_size, 128)
@@ -30,7 +30,7 @@ def load_model(X_train, y_train):
             return x
 
     # Infer dimensions from X_train
-    num_channels = X_train.shape[1]  
+    num_channels = X_train.shape[1]
     img_height = X_train.shape[2]
     img_width = X_train.shape[3]
 
@@ -45,4 +45,6 @@ def load_model(X_train, y_train):
     # Ensure at least 2 classes
     num_classes = max(2, num_classes)
 
-    return FlexibleImageClassificationNN(num_channels, img_height, img_width, num_classes)
+    return FlexibleImageClassificationNN(
+        num_channels, img_height, img_width, num_classes
+    )

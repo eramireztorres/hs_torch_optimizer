@@ -9,7 +9,7 @@ from src.dynamic_models.dynamic_model_updater import (
     DynamicModelUpdater,
     DynamicRegressionModelUpdater,
     DynamicImageModelUpdater,
-    DynamicImageRegressionModelUpdater
+    DynamicImageRegressionModelUpdater,
 )
 
 
@@ -59,15 +59,16 @@ def load_model(X_train, y_train):
 
         updater = DynamicModelUpdater(dynamic_file_path=str(model_path))
         model, error = updater.run_dynamic_model(
-            sample_classification_data['X_train'],
-            sample_classification_data['y_train']
+            sample_classification_data["X_train"], sample_classification_data["y_train"]
         )
 
         assert model is not None
         assert error is None
         assert isinstance(model, nn.Module)
 
-    def test_run_dynamic_model_returns_tuple(self, temp_dir, sample_classification_data):
+    def test_run_dynamic_model_returns_tuple(
+        self, temp_dir, sample_classification_data
+    ):
         """Test running dynamic model that returns tuple."""
         model_path = temp_dir / "test_model.py"
 
@@ -94,8 +95,7 @@ def load_model(X_train, y_train):
 
         updater = DynamicModelUpdater(dynamic_file_path=str(model_path))
         result, error = updater.run_dynamic_model(
-            sample_classification_data['X_train'],
-            sample_classification_data['y_train']
+            sample_classification_data["X_train"], sample_classification_data["y_train"]
         )
 
         assert result is not None
@@ -103,15 +103,16 @@ def load_model(X_train, y_train):
         # Result should be a tuple
         assert isinstance(result, tuple)
 
-    def test_run_dynamic_model_missing_load_model(self, temp_dir, sample_classification_data):
+    def test_run_dynamic_model_missing_load_model(
+        self, temp_dir, sample_classification_data
+    ):
         """Test error when load_model function is missing."""
         model_path = temp_dir / "test_model.py"
         model_path.write_text("# No load_model function")
 
         updater = DynamicModelUpdater(dynamic_file_path=str(model_path))
         model, error = updater.run_dynamic_model(
-            sample_classification_data['X_train'],
-            sample_classification_data['y_train']
+            sample_classification_data["X_train"], sample_classification_data["y_train"]
         )
 
         assert model is None
@@ -121,18 +122,21 @@ def load_model(X_train, y_train):
     def test_run_dynamic_model_syntax_error(self, temp_dir, sample_classification_data):
         """Test error handling for syntax errors."""
         model_path = temp_dir / "test_model.py"
-        model_path.write_text("def load_model(X_train, y_train):\n    return )")  # Syntax error
+        model_path.write_text(
+            "def load_model(X_train, y_train):\n    return )"
+        )  # Syntax error
 
         updater = DynamicModelUpdater(dynamic_file_path=str(model_path))
         model, error = updater.run_dynamic_model(
-            sample_classification_data['X_train'],
-            sample_classification_data['y_train']
+            sample_classification_data["X_train"], sample_classification_data["y_train"]
         )
 
         assert model is None
         assert error is not None
 
-    def test_run_dynamic_model_runtime_error(self, temp_dir, sample_classification_data):
+    def test_run_dynamic_model_runtime_error(
+        self, temp_dir, sample_classification_data
+    ):
         """Test error handling for runtime errors."""
         model_path = temp_dir / "test_model.py"
 
@@ -144,8 +148,7 @@ def load_model(X_train, y_train):
 
         updater = DynamicModelUpdater(dynamic_file_path=str(model_path))
         model, error = updater.run_dynamic_model(
-            sample_classification_data['X_train'],
-            sample_classification_data['y_train']
+            sample_classification_data["X_train"], sample_classification_data["y_train"]
         )
 
         assert model is None

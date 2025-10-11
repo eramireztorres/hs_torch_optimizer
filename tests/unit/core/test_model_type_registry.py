@@ -5,7 +5,7 @@ from src.core.model_type_registry import (
     ModelTypeRegistry,
     TaskType,
     DataType,
-    create_default_registry
+    create_default_registry,
 )
 
 
@@ -26,9 +26,13 @@ class TestModelTypeRegistry:
         class TestUpdater:
             pass
 
-        registry.register_updater(TaskType.CLASSIFICATION, DataType.TABULAR, TestUpdater)
+        registry.register_updater(
+            TaskType.CLASSIFICATION, DataType.TABULAR, TestUpdater
+        )
 
-        updater_class = registry.get_updater_class(TaskType.CLASSIFICATION, DataType.TABULAR)
+        updater_class = registry.get_updater_class(
+            TaskType.CLASSIFICATION, DataType.TABULAR
+        )
         assert updater_class == TestUpdater
 
     def test_register_improver(self):
@@ -40,7 +44,9 @@ class TestModelTypeRegistry:
 
         registry.register_improver(TaskType.REGRESSION, DataType.IMAGE, TestImprover)
 
-        improver_class = registry.get_improver_class(TaskType.REGRESSION, DataType.IMAGE)
+        improver_class = registry.get_improver_class(
+            TaskType.REGRESSION, DataType.IMAGE
+        )
         assert improver_class == TestImprover
 
     def test_get_updater_class_not_registered(self):
@@ -65,7 +71,9 @@ class TestModelTypeRegistry:
             def __init__(self):
                 self.name = "test"
 
-        registry.register_updater(TaskType.CLASSIFICATION, DataType.TABULAR, TestUpdater)
+        registry.register_updater(
+            TaskType.CLASSIFICATION, DataType.TABULAR, TestUpdater
+        )
 
         updater = registry.create_updater(TaskType.CLASSIFICATION, DataType.TABULAR)
         assert isinstance(updater, TestUpdater)
@@ -82,7 +90,9 @@ class TestModelTypeRegistry:
         registry.register_improver(TaskType.REGRESSION, DataType.IMAGE, TestImprover)
 
         mock_llm = object()
-        improver = registry.create_improver(TaskType.REGRESSION, DataType.IMAGE, mock_llm)
+        improver = registry.create_improver(
+            TaskType.REGRESSION, DataType.IMAGE, mock_llm
+        )
         assert isinstance(improver, TestImprover)
         assert improver.llm == mock_llm
 

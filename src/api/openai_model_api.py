@@ -1,4 +1,5 @@
 import os
+
 # import openai
 
 import openai
@@ -6,22 +7,24 @@ from openai._base_client import SyncHttpxClientWrapper
 
 _old_init = SyncHttpxClientWrapper.__init__
 
+
 def new_init(self, *args, **kwargs):
     kwargs.pop("proxies", None)
     return _old_init(self, *args, **kwargs)
 
+
 SyncHttpxClientWrapper.__init__ = new_init
 
 
-
 from src.api.base_model_api import BaseModelAPI
+
 
 class OpenAIModelAPI(BaseModelAPI):
     """
     A unified OpenAI API client that works with both legacy GPT models and the new reasoning models (o1/o3).
     """
 
-    def __init__(self, api_key=None, model='gpt-4.1-mini'):
+    def __init__(self, api_key=None, model="gpt-4.1-mini"):
         super().__init__(api_key)
         self.api_key = api_key or self.get_api_key_from_env()
         self.model = model
@@ -30,7 +33,7 @@ class OpenAIModelAPI(BaseModelAPI):
 
     def get_api_key_from_env(self):
         """Retrieve the OpenAI API key from environment variables."""
-        return os.getenv('OPENAI_API_KEY')
+        return os.getenv("OPENAI_API_KEY")
 
     def get_response(self, prompt, max_tokens=1024, temperature=0.5):
         """
@@ -62,5 +65,7 @@ class OpenAIModelAPI(BaseModelAPI):
 
         # Extract and store the assistant's reply.
         assistant_response = response.choices[0].message.content
-        self.conversation_history.append({"role": "assistant", "content": assistant_response})
+        self.conversation_history.append(
+            {"role": "assistant", "content": assistant_response}
+        )
         return assistant_response.strip()

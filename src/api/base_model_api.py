@@ -1,5 +1,6 @@
 import abc
 
+
 class BaseModelAPI(abc.ABC):
     """
     Abstract base class for model APIs.

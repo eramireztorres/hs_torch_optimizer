@@ -8,8 +8,8 @@ from src.dynamic_models.dynamic_model_updater import (
 )
 
 __all__ = [
-    'DynamicModelUpdater',
-    'DynamicRegressionModelUpdater',
-    'DynamicImageModelUpdater',
-    'DynamicImageRegressionModelUpdater',
+    "DynamicModelUpdater",
+    "DynamicRegressionModelUpdater",
+    "DynamicImageModelUpdater",
+    "DynamicImageRegressionModelUpdater",
 ]

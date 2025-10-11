@@ -9,7 +9,7 @@ from sklearn.metrics import (
     recall_score,
     f1_score,
     mean_squared_error,
-    r2_score
+    r2_score,
 )
 from sklearn.model_selection import train_test_split
 from typing import Union, Tuple, Optional
@@ -40,7 +40,7 @@ class NNModelTrainer:
     """
 
     def __init__(
-        self, 
+        self,
         model: Union[nn.Module, Tuple],
         X_train: np.ndarray,
         y_train: Union[np.ndarray, list],
@@ -49,21 +49,24 @@ class NNModelTrainer:
         batch_size: int = 32,
         lr: float = 0.001,
         device: Optional[Union[str, torch.device]] = None,
-        patience: int = 5
+        patience: int = 5,
     ):
-        
-        
+
         if isinstance(model, tuple):
             if len(model) == 1:
                 self.model = model[0]
-                self.criterion = nn.CrossEntropyLoss()  # Default loss for classification
+                self.criterion = (
+                    nn.CrossEntropyLoss()
+                )  # Default loss for classification
                 self.optimizer = optim.Adam(self.model.parameters(), lr=lr)
                 self.scheduler = None
             elif len(model) == 2:
                 self.model, second_element = model
-                if isinstance(second_element, optim.Optimizer):  # If optimizer is passed
+                if isinstance(
+                    second_element, optim.Optimizer
+                ):  # If optimizer is passed
                     self.optimizer = second_element
-                    self.criterion = nn.CrossEntropyLoss()                    
+                    self.criterion = nn.CrossEntropyLoss()
                 else:  # Assume second_element is criterion
                     self.criterion = second_element
                     self.optimizer = optim.Adam(self.model.parameters(), lr=lr)
@@ -74,7 +77,9 @@ class NNModelTrainer:
             elif len(model) == 4:
                 self.model, self.optimizer, self.criterion, self.scheduler = model
             else:
-                raise ValueError("Invalid model tuple length. Expected 1, 2, 3 or 4 elements.")
+                raise ValueError(
+                    "Invalid model tuple length. Expected 1, 2, 3 or 4 elements."
+                )
 
         else:
             self.model = model
@@ -85,7 +90,7 @@ class NNModelTrainer:
         if X_train.ndim == 3:  # shape: (num_samples, height, width)
             X_train = np.expand_dims(X_train, axis=1)
             X_test = np.expand_dims(X_test, axis=1)
-            
+
         if isinstance(X_train, pd.DataFrame):
             X_train = X_train.values
         if isinstance(X_test, pd.DataFrame):
@@ -95,12 +100,11 @@ class NNModelTrainer:
         if isinstance(y_test, pd.Series):
             y_test = y_test.values
 
-
         self.X_train, self.X_val, self.y_train, self.y_val = train_test_split(
-            torch.tensor(X_train, dtype=torch.float32), 
-            torch.tensor(y_train, dtype=torch.long), 
-            test_size=0.2, 
-            random_state=42
+            torch.tensor(X_train, dtype=torch.float32),
+            torch.tensor(y_train, dtype=torch.long),
+            test_size=0.2,
+            random_state=42,
         )
 
         self.X_test = torch.tensor(X_test, dtype=torch.float32)
@@ -108,12 +112,16 @@ class NNModelTrainer:
 
         self.batch_size = batch_size
 
-        self.device = torch.device(device) if device is not None else torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = (
+            torch.device(device)
+            if device is not None
+            else torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        )
         self.model = self.model.to(self.device)
         self.criterion = self.criterion.to(self.device)
 
         self.patience = patience
-        self.best_loss = float('inf')
+        self.best_loss = float("inf")
         self.epochs_no_improve = 0
 
     def _validate_model(self) -> float:
@@ -137,7 +145,9 @@ class NNModelTrainer:
             epochs (int): Maximum number of epochs to train.
         """
         dataset = torch.utils.data.TensorDataset(self.X_train, self.y_train)
-        dataloader = torch.utils.data.DataLoader(dataset, batch_size=self.batch_size, shuffle=True)
+        dataloader = torch.utils.data.DataLoader(
+            dataset, batch_size=self.batch_size, shuffle=True
+        )
 
         for epoch in range(epochs):
             self.model.train()
@@ -154,8 +164,10 @@ class NNModelTrainer:
             avg_loss = running_loss / len(dataloader)
             val_loss = self._validate_model()
 
-            print(f"Epoch [{epoch+1}/{epochs}], Loss: {avg_loss:.4f}, Val Loss: {val_loss:.4f}")
-            
+            print(
+                f"Epoch [{epoch+1}/{epochs}], Loss: {avg_loss:.4f}, Val Loss: {val_loss:.4f}"
+            )
+
             if self.scheduler is not None:
                 self.scheduler.step(val_loss)
 
@@ -187,7 +199,9 @@ class NNModelTrainer:
 
         metrics = {
             "accuracy": accuracy_score(labels, predicted),
-            "precision_per_class": precision_score(labels, predicted, average=None).tolist(),
+            "precision_per_class": precision_score(
+                labels, predicted, average=None
+            ).tolist(),
             "recall_per_class": recall_score(labels, predicted, average=None).tolist(),
             "f1_score_per_class": f1_score(labels, predicted, average=None).tolist(),
             "overall_precision": precision_score(labels, predicted, average="weighted"),
@@ -249,10 +263,9 @@ class NNRegressionModelTrainer:
         batch_size: int = 32,
         lr: float = 0.001,
         device: Optional[Union[str, torch.device]] = None,
-        patience: int = 5
+        patience: int = 5,
     ):
-        
-        
+
         if isinstance(X_train, pd.DataFrame):
             X_train = X_train.values
         if isinstance(X_test, pd.DataFrame):
@@ -261,8 +274,7 @@ class NNRegressionModelTrainer:
             y_train = y_train.values
         if isinstance(y_test, pd.Series):
             y_test = y_test.values
-        
-        
+
         if isinstance(model, tuple):
             if len(model) == 1:
                 self.model = model[0]
@@ -271,9 +283,13 @@ class NNRegressionModelTrainer:
                 self.scheduler = None
             elif len(model) == 2:
                 self.model, second_element = model
-                if isinstance(second_element, nn.Module):  # If the second element is another model (unlikely)
+                if isinstance(
+                    second_element, nn.Module
+                ):  # If the second element is another model (unlikely)
                     raise ValueError("Unexpected model structure.")
-                elif isinstance(second_element, optim.Optimizer):  # If optimizer is passed
+                elif isinstance(
+                    second_element, optim.Optimizer
+                ):  # If optimizer is passed
                     self.optimizer = second_element
                     self.criterion = nn.MSELoss()
                 else:  # Assume second_element is criterion
@@ -286,8 +302,10 @@ class NNRegressionModelTrainer:
             elif len(model) == 4:
                 self.model, self.optimizer, self.criterion, self.scheduler = model
             else:
-                raise ValueError("Invalid model tuple length. Expected 1, 2, 3 or 4 elements.")
-                
+                raise ValueError(
+                    "Invalid model tuple length. Expected 1, 2, 3 or 4 elements."
+                )
+
         else:
             self.model = model
             self.criterion = nn.MSELoss()  # Default loss for regression
@@ -298,8 +316,10 @@ class NNRegressionModelTrainer:
             X_train = np.expand_dims(X_train, axis=1)
             X_test = np.expand_dims(X_test, axis=1)
 
-        self.device = torch.device(device) if device is not None else torch.device(
-            "cuda" if torch.cuda.is_available() else "cpu"
+        self.device = (
+            torch.device(device)
+            if device is not None
+            else torch.device("cuda" if torch.cuda.is_available() else "cpu")
         )
 
         if not isinstance(X_train, np.ndarray):
@@ -308,32 +328,37 @@ class NNRegressionModelTrainer:
             y_train = np.array(y_train)
             y_test = np.array(y_test)
 
-
         X_train_np, X_val_np, y_train_np, y_val_np = train_test_split(
             X_train, y_train, test_size=0.2, random_state=42
         )
 
         self.X_train = torch.tensor(X_train_np, dtype=torch.float32).to(self.device)
-        self.X_val = torch.tensor(X_val_np, dtype=torch.float32).to(self.device)        
-        self.X_test = torch.tensor(X_test, dtype=torch.float32).to(self.device)       
-        
-        
+        self.X_val = torch.tensor(X_val_np, dtype=torch.float32).to(self.device)
+        self.X_test = torch.tensor(X_test, dtype=torch.float32).to(self.device)
+
         if y_train_np.ndim == 1 or (y_train_np.ndim == 2 and y_train_np.shape[1] == 1):
-            self.y_train = torch.tensor(y_train_np, dtype=torch.float32).view(-1, 1).to(self.device)
-            self.y_val = torch.tensor(y_val_np, dtype=torch.float32).view(-1, 1).to(self.device)
-            self.y_test = torch.tensor(y_test, dtype=torch.float32).view(-1, 1).to(self.device)
+            self.y_train = (
+                torch.tensor(y_train_np, dtype=torch.float32)
+                .view(-1, 1)
+                .to(self.device)
+            )
+            self.y_val = (
+                torch.tensor(y_val_np, dtype=torch.float32).view(-1, 1).to(self.device)
+            )
+            self.y_test = (
+                torch.tensor(y_test, dtype=torch.float32).view(-1, 1).to(self.device)
+            )
         else:
             self.y_train = torch.tensor(y_train_np, dtype=torch.float32).to(self.device)
             self.y_val = torch.tensor(y_val_np, dtype=torch.float32).to(self.device)
             self.y_test = torch.tensor(y_test, dtype=torch.float32).to(self.device)
-
 
         self.batch_size = batch_size
         self.model = self.model.to(self.device)
         self.criterion = self.criterion.to(self.device)
 
         self.patience = patience
-        self.best_loss = float('inf')
+        self.best_loss = float("inf")
         self.epochs_no_improve = 0
 
     def _validate_model(self) -> float:
@@ -355,10 +380,12 @@ class NNRegressionModelTrainer:
 
         Args:
             epochs (int): Maximum number of epochs to train.
-        """  
-        
+        """
+
         dataset = torch.utils.data.TensorDataset(self.X_train, self.y_train)
-        dataloader = torch.utils.data.DataLoader(dataset, batch_size=self.batch_size, shuffle=True)
+        dataloader = torch.utils.data.DataLoader(
+            dataset, batch_size=self.batch_size, shuffle=True
+        )
 
         for epoch in range(epochs):
             self.model.train()
@@ -370,11 +397,15 @@ class NNRegressionModelTrainer:
                 outputs = self.model(inputs)
 
                 if torch.isnan(outputs).any():
-                    print(f"WARNING: NaN detected in model outputs at epoch {epoch + 1}")
+                    print(
+                        f"WARNING: NaN detected in model outputs at epoch {epoch + 1}"
+                    )
 
                 loss = self.criterion(outputs, targets)
                 if torch.isnan(loss):
-                    print(f"ERROR: Loss became NaN at epoch {epoch + 1}! Stopping training.")
+                    print(
+                        f"ERROR: Loss became NaN at epoch {epoch + 1}! Stopping training."
+                    )
                     return  # Stop training if loss is NaN
 
                 loss.backward()
@@ -384,8 +415,10 @@ class NNRegressionModelTrainer:
             avg_loss = running_loss / len(dataloader)
             val_loss = self._validate_model()
 
-            print(f"Epoch [{epoch+1}/{epochs}], Loss: {avg_loss:.4f}, Val Loss: {val_loss:.4f}")
-            
+            print(
+                f"Epoch [{epoch+1}/{epochs}], Loss: {avg_loss:.4f}, Val Loss: {val_loss:.4f}"
+            )
+
             if self.scheduler is not None:
                 self.scheduler.step(val_loss)
 
@@ -414,7 +447,7 @@ class NNRegressionModelTrainer:
 
         metrics = {
             "mean_squared_error": mean_squared_error(targets_np, outputs_np),
-            "r2_score": r2_score(targets_np, outputs_np)
+            "r2_score": r2_score(targets_np, outputs_np),
         }
         return metrics
 
@@ -435,4 +468,3 @@ class NNRegressionModelTrainer:
             filepath (str): Path to the file from which to load the model.
         """
         self.model.load_state_dict(torch.load(filepath, map_location=self.device))
-

@@ -15,10 +15,10 @@ class TestNNModelTrainer:
         """Test initialization with model only."""
         trainer = NNModelTrainer(
             model=simple_model,
-            X_train=sample_classification_data['X_train'],
-            y_train=sample_classification_data['y_train'],
-            X_test=sample_classification_data['X_test'],
-            y_test=sample_classification_data['y_test']
+            X_train=sample_classification_data["X_train"],
+            y_train=sample_classification_data["y_train"],
+            X_test=sample_classification_data["X_test"],
+            y_test=sample_classification_data["y_test"],
         )
 
         assert trainer.model is not None
@@ -31,10 +31,10 @@ class TestNNModelTrainer:
 
         trainer = NNModelTrainer(
             model=(simple_model, criterion),
-            X_train=sample_classification_data['X_train'],
-            y_train=sample_classification_data['y_train'],
-            X_test=sample_classification_data['X_test'],
-            y_test=sample_classification_data['y_test']
+            X_train=sample_classification_data["X_train"],
+            y_train=sample_classification_data["y_train"],
+            X_test=sample_classification_data["X_test"],
+            y_test=sample_classification_data["y_test"],
         )
 
         assert trainer.criterion is criterion
@@ -47,10 +47,10 @@ class TestNNModelTrainer:
 
         trainer = NNModelTrainer(
             model=(simple_model, optimizer, criterion, scheduler),
-            X_train=sample_classification_data['X_train'],
-            y_train=sample_classification_data['y_train'],
-            X_test=sample_classification_data['X_test'],
-            y_test=sample_classification_data['y_test']
+            X_train=sample_classification_data["X_train"],
+            y_train=sample_classification_data["y_train"],
+            X_test=sample_classification_data["X_test"],
+            y_test=sample_classification_data["y_test"],
         )
 
         assert trainer.optimizer is optimizer
@@ -62,10 +62,10 @@ class TestNNModelTrainer:
         """Test training the model."""
         trainer = NNModelTrainer(
             model=simple_model,
-            X_train=sample_classification_data['X_train'],
-            y_train=sample_classification_data['y_train'],
-            X_test=sample_classification_data['X_test'],
-            y_test=sample_classification_data['y_test']
+            X_train=sample_classification_data["X_train"],
+            y_train=sample_classification_data["y_train"],
+            X_test=sample_classification_data["X_test"],
+            y_test=sample_classification_data["y_test"],
         )
 
         initial_params = [p.clone() for p in simple_model.parameters()]
@@ -73,41 +73,44 @@ class TestNNModelTrainer:
 
         # Parameters should have changed
         final_params = list(simple_model.parameters())
-        assert not all(torch.equal(initial_params[i], final_params[i]) for i in range(len(initial_params)))
+        assert not all(
+            torch.equal(initial_params[i], final_params[i])
+            for i in range(len(initial_params))
+        )
 
     def test_evaluate_model(self, simple_model, sample_classification_data):
         """Test evaluating the model."""
         trainer = NNModelTrainer(
             model=simple_model,
-            X_train=sample_classification_data['X_train'],
-            y_train=sample_classification_data['y_train'],
-            X_test=sample_classification_data['X_test'],
-            y_test=sample_classification_data['y_test']
+            X_train=sample_classification_data["X_train"],
+            y_train=sample_classification_data["y_train"],
+            X_test=sample_classification_data["X_test"],
+            y_test=sample_classification_data["y_test"],
         )
 
         metrics = trainer.evaluate_model()
 
-        assert 'accuracy' in metrics
-        assert 'overall_precision' in metrics
-        assert 'overall_recall' in metrics
-        assert 'overall_f1_score' in metrics
-        assert 0 <= metrics['accuracy'] <= 1
+        assert "accuracy" in metrics
+        assert "overall_precision" in metrics
+        assert "overall_recall" in metrics
+        assert "overall_f1_score" in metrics
+        assert 0 <= metrics["accuracy"] <= 1
 
     def test_device_selection(self, simple_model, sample_classification_data):
         """Test device selection."""
         trainer = NNModelTrainer(
             model=simple_model,
-            X_train=sample_classification_data['X_train'],
-            y_train=sample_classification_data['y_train'],
-            X_test=sample_classification_data['X_test'],
-            y_test=sample_classification_data['y_test']
+            X_train=sample_classification_data["X_train"],
+            y_train=sample_classification_data["y_train"],
+            X_test=sample_classification_data["X_test"],
+            y_test=sample_classification_data["y_test"],
         )
 
         # Should select cuda if available, else cpu
         if torch.cuda.is_available():
-            assert trainer.device.type == 'cuda'
+            assert trainer.device.type == "cuda"
         else:
-            assert trainer.device.type == 'cpu'
+            assert trainer.device.type == "cpu"
 
     @pytest.mark.slow
     def test_early_stopping(self, simple_model, sample_classification_data):
@@ -115,11 +118,11 @@ class TestNNModelTrainer:
         # Create trainer with low patience
         trainer = NNModelTrainer(
             model=simple_model,
-            X_train=sample_classification_data['X_train'],
-            y_train=sample_classification_data['y_train'],
-            X_test=sample_classification_data['X_test'],
-            y_test=sample_classification_data['y_test'],
-            patience=2
+            X_train=sample_classification_data["X_train"],
+            y_train=sample_classification_data["y_train"],
+            X_test=sample_classification_data["X_test"],
+            y_test=sample_classification_data["y_test"],
+            patience=2,
         )
 
         # Train for many epochs - should stop early if no improvement
@@ -132,11 +135,11 @@ class TestNNModelTrainer:
         """Test custom batch size."""
         trainer = NNModelTrainer(
             model=simple_model,
-            X_train=sample_classification_data['X_train'],
-            y_train=sample_classification_data['y_train'],
-            X_test=sample_classification_data['X_test'],
-            y_test=sample_classification_data['y_test'],
-            batch_size=16
+            X_train=sample_classification_data["X_train"],
+            y_train=sample_classification_data["y_train"],
+            X_test=sample_classification_data["X_test"],
+            y_test=sample_classification_data["y_test"],
+            batch_size=16,
         )
 
         assert trainer.batch_size == 16
@@ -148,6 +151,7 @@ class TestNNRegressionModelTrainer:
 
     def test_init(self, sample_regression_data):
         """Test initialization."""
+
         class RegressionModel(nn.Module):
             def __init__(self):
                 super().__init__()
@@ -160,10 +164,10 @@ class TestNNRegressionModelTrainer:
 
         trainer = NNRegressionModelTrainer(
             model=model,
-            X_train=sample_regression_data['X_train'],
-            y_train=sample_regression_data['y_train'],
-            X_test=sample_regression_data['X_test'],
-            y_test=sample_regression_data['y_test']
+            X_train=sample_regression_data["X_train"],
+            y_train=sample_regression_data["y_train"],
+            X_test=sample_regression_data["X_test"],
+            y_test=sample_regression_data["y_test"],
         )
 
         assert isinstance(trainer.criterion, nn.MSELoss)
@@ -171,6 +175,7 @@ class TestNNRegressionModelTrainer:
     @pytest.mark.slow
     def test_train_regression_model(self, sample_regression_data):
         """Test training regression model."""
+
         class RegressionModel(nn.Module):
             def __init__(self):
                 super().__init__()
@@ -183,10 +188,10 @@ class TestNNRegressionModelTrainer:
 
         trainer = NNRegressionModelTrainer(
             model=model,
-            X_train=sample_regression_data['X_train'],
-            y_train=sample_regression_data['y_train'],
-            X_test=sample_regression_data['X_test'],
-            y_test=sample_regression_data['y_test']
+            X_train=sample_regression_data["X_train"],
+            y_train=sample_regression_data["y_train"],
+            X_test=sample_regression_data["X_test"],
+            y_test=sample_regression_data["y_test"],
         )
 
         trainer.train_model(epochs=2)
@@ -195,6 +200,7 @@ class TestNNRegressionModelTrainer:
 
     def test_evaluate_regression_model(self, sample_regression_data):
         """Test evaluating regression model."""
+
         class RegressionModel(nn.Module):
             def __init__(self):
                 super().__init__()
@@ -207,17 +213,17 @@ class TestNNRegressionModelTrainer:
 
         trainer = NNRegressionModelTrainer(
             model=model,
-            X_train=sample_regression_data['X_train'],
-            y_train=sample_regression_data['y_train'],
-            X_test=sample_regression_data['X_test'],
-            y_test=sample_regression_data['y_test']
+            X_train=sample_regression_data["X_train"],
+            y_train=sample_regression_data["y_train"],
+            X_test=sample_regression_data["X_test"],
+            y_test=sample_regression_data["y_test"],
         )
 
         metrics = trainer.evaluate_model()
 
-        assert 'mean_squared_error' in metrics
-        assert 'r2_score' in metrics
-        assert metrics['mean_squared_error'] >= 0
+        assert "mean_squared_error" in metrics
+        assert "r2_score" in metrics
+        assert metrics["mean_squared_error"] >= 0
 
     def test_multi_output_regression(self, sample_regression_data):
         """Test multi-output regression."""
@@ -237,11 +243,11 @@ class TestNNRegressionModelTrainer:
 
         trainer = NNRegressionModelTrainer(
             model=model,
-            X_train=sample_regression_data['X_train'],
+            X_train=sample_regression_data["X_train"],
             y_train=y_train_multi,
-            X_test=sample_regression_data['X_test'],
-            y_test=y_test_multi
+            X_test=sample_regression_data["X_test"],
+            y_test=y_test_multi,
         )
 
         metrics = trainer.evaluate_model()
-        assert 'mean_squared_error' in metrics
+        assert "mean_squared_error" in metrics

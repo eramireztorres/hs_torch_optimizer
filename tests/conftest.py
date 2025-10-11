@@ -30,12 +30,7 @@ def sample_classification_data():
     X_test = X[80:]
     y_test = y[80:]
 
-    return {
-        'X_train': X_train,
-        'y_train': y_train,
-        'X_test': X_test,
-        'y_test': y_test
-    }
+    return {"X_train": X_train, "y_train": y_train, "X_test": X_test, "y_test": y_test}
 
 
 @pytest.fixture
@@ -50,12 +45,7 @@ def sample_regression_data():
     X_test = X[80:]
     y_test = y[80:]
 
-    return {
-        'X_train': X_train,
-        'y_train': y_train,
-        'X_test': X_test,
-        'y_test': y_test
-    }
+    return {"X_train": X_train, "y_train": y_train, "X_test": X_test, "y_test": y_test}
 
 
 @pytest.fixture
@@ -70,23 +60,20 @@ def sample_image_data():
     X_test = X[80:]
     y_test = y[80:]
 
-    return {
-        'X_train': X_train,
-        'y_train': y_train,
-        'X_test': X_test,
-        'y_test': y_test
-    }
+    return {"X_train": X_train, "y_train": y_train, "X_test": X_test, "y_test": y_test}
 
 
 @pytest.fixture
 def sample_csv_data(temp_dir):
     """Create sample CSV files."""
-    df = pd.DataFrame({
-        'feature1': np.random.randn(100),
-        'feature2': np.random.randn(100),
-        'feature3': np.random.randn(100),
-        'target': np.random.randint(0, 2, 100)
-    })
+    df = pd.DataFrame(
+        {
+            "feature1": np.random.randn(100),
+            "feature2": np.random.randn(100),
+            "feature3": np.random.randn(100),
+            "target": np.random.randint(0, 2, 100),
+        }
+    )
 
     csv_path = temp_dir / "data.csv"
     df.to_csv(csv_path, index=False)
@@ -104,6 +91,7 @@ def sample_joblib_data(temp_dir, sample_classification_data):
 @pytest.fixture
 def simple_model():
     """Create a simple PyTorch model for testing."""
+
     class SimpleModel(nn.Module):
         def __init__(self, input_dim=10, output_dim=3):
             super().__init__()
@@ -169,11 +157,11 @@ def load_model(X_train, y_train):
 def sample_metrics():
     """Sample metrics for testing."""
     return {
-        'accuracy': 0.85,
-        'loss': 0.42,
-        'precision': 0.83,
-        'recall': 0.87,
-        'f1': 0.85
+        "accuracy": 0.85,
+        "loss": 0.42,
+        "precision": 0.83,
+        "recall": 0.87,
+        "f1": 0.85,
     }
 
 
@@ -181,8 +169,11 @@ def sample_metrics():
 def sample_model_history(sample_metrics, mock_model_code):
     """Sample model history for testing."""
     return [
-        {'model_code': mock_model_code, 'metrics': sample_metrics},
-        {'model_code': mock_model_code, 'metrics': {**sample_metrics, 'accuracy': 0.87}}
+        {"model_code": mock_model_code, "metrics": sample_metrics},
+        {
+            "model_code": mock_model_code,
+            "metrics": {**sample_metrics, "accuracy": 0.87},
+        },
     ]
 
 
@@ -200,12 +191,6 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "slow: marks tests as slow (deselect with '-m \"not slow\"')"
     )
-    config.addinivalue_line(
-        "markers", "integration: marks tests as integration tests"
-    )
-    config.addinivalue_line(
-        "markers", "unit: marks tests as unit tests"
-    )
-    config.addinivalue_line(
-        "markers", "gpu: marks tests that require GPU"
-    )
+    config.addinivalue_line("markers", "integration: marks tests as integration tests")
+    config.addinivalue_line("markers", "unit: marks tests as unit tests")
+    config.addinivalue_line("markers", "gpu: marks tests that require GPU")

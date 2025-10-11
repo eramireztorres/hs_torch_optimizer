@@ -13,25 +13,27 @@ class TestCLIIntegration:
     def test_torch_optimize_help(self):
         """Test that torch_optimize --help works."""
         result = subprocess.run(
-            ['torch_optimize', '--help'],
-            capture_output=True,
-            text=True
+            ["torch_optimize", "--help"], capture_output=True, text=True
         )
 
         assert result.returncode == 0
-        assert 'usage:' in result.stdout.lower() or 'torch_optimize' in result.stdout
+        assert "usage:" in result.stdout.lower() or "torch_optimize" in result.stdout
 
     def test_torch_optimize_missing_data(self):
         """Test error handling when data path is missing."""
         result = subprocess.run(
-            ['torch_optimize', '--data', '/nonexistent/data.csv'],
+            ["torch_optimize", "--data", "/nonexistent/data.csv"],
             capture_output=True,
             text=True,
-            timeout=10
+            timeout=10,
         )
 
         # Should fail with error
-        assert result.returncode != 0 or 'error' in result.stderr.lower() or 'error' in result.stdout.lower()
+        assert (
+            result.returncode != 0
+            or "error" in result.stderr.lower()
+            or "error" in result.stdout.lower()
+        )
 
     @pytest.mark.slow
     def test_torch_optimize_full_run(self, temp_dir, sample_classification_data):

@@ -37,7 +37,7 @@ class OptimizationConfig:
     batch_size: int = 32
     lr: float = 0.001
     epochs: int = 10
-    metrics_source: Literal['validation', 'test'] = 'validation'
+    metrics_source: Literal["validation", "test"] = "validation"
     error_model: Optional[str] = None
     error_prompt_path: Optional[str] = None
     initial_model_path: Optional[str] = None
@@ -61,8 +61,10 @@ class OptimizationConfig:
 
     def _validate_metrics_source(self):
         """Ensure metrics_source is valid."""
-        if self.metrics_source not in ['validation', 'test']:
-            raise ValueError(f"metrics_source must be 'validation' or 'test', got {self.metrics_source}")
+        if self.metrics_source not in ["validation", "test"]:
+            raise ValueError(
+                f"metrics_source must be 'validation' or 'test', got {self.metrics_source}"
+            )
 
     def _validate_epochs(self):
         """Ensure epochs is positive."""

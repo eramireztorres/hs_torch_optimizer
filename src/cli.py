@@ -6,23 +6,25 @@ from src.main_controller import MainController
 from src.api.model_api_factory import ModelAPIFactory
 from src.optimization_config import OptimizationConfig
 
-#%%
+# %%
+
 
 @cli_decorator
-def select_model_cli(data,
-        model: str = 'gpt-4.1-mini',
-        model_provider: str = None,
-        is_regression: Literal[None, "true", "false"] = None,
-        history_file_path: str = 'model_history.joblib',
-        iterations: int = 10,
-        extra_info: str = 'Not available',
-        batch_size: int = 32,
-        lr: float = 0.001,
-        epochs: int = 10,
-        metrics_source: str = 'validation',
-        error_model: str = None,
-        initial_model_path: str = None
-        ):
+def select_model_cli(
+    data,
+    model: str = "gpt-4.1-mini",
+    model_provider: str = None,
+    is_regression: Literal[None, "true", "false"] = None,
+    history_file_path: str = "model_history.joblib",
+    iterations: int = 10,
+    extra_info: str = "Not available",
+    batch_size: int = 32,
+    lr: float = 0.001,
+    epochs: int = 10,
+    metrics_source: str = "validation",
+    error_model: str = None,
+    initial_model_path: str = None,
+):
     """
     Command-line interface for the model optimization process.
 
@@ -66,7 +68,9 @@ def select_model_cli(data,
         ```
     """
 
-    error_prompt_path = os.path.join(os.path.dirname(__file__), 'prompts/error_correction_prompt.txt')
+    error_prompt_path = os.path.join(
+        os.path.dirname(__file__), "prompts/error_correction_prompt.txt"
+    )
 
     if not model_provider:
         model_provider = ModelAPIFactory.get_provider_from_model(model)
@@ -75,7 +79,7 @@ def select_model_cli(data,
     print(f"Metrics source: {metrics_source}")
 
     if is_regression is not None:
-        is_regression = is_regression == 'true'
+        is_regression = is_regression == "true"
 
     config = OptimizationConfig(
         joblib_file_path=data,
@@ -91,15 +95,12 @@ def select_model_cli(data,
         metrics_source=metrics_source,
         error_model=error_model,
         error_prompt_path=error_prompt_path,
-        initial_model_path=initial_model_path
+        initial_model_path=initial_model_path,
     )
 
     controller = MainController(config)
     controller.run(iterations=iterations)
 
 
-
 if __name__ == "__main__":
     select_model_cli()
-
- 
